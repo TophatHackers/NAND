@@ -3,10 +3,16 @@ Groundbreaking NAND language based on the universal NAND gate
 
 ### Instructions
 
-| **Instruction** | **Description** |
+| **2 bit** | **OPcode** |
 |:----------------|:----------------|
-| `START`           |Start chain, args: rt, rs  |
-| `END`           |  End chain, args: rt; Registry to save output in |
-| `NAND`           | NAND Gate, args: rt, rs |
-| `TBE`           | |
+| `00`           |`NAND`|
+| `01`           |  `STACK` |
+| `10`           |`START`|
+| `11`           | `END` |
+
+2 bit - OPcode:
+00 - NAND
+01 - STACK
+10 - START
+11 - END
 
