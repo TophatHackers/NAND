@@ -7,15 +7,29 @@ Registers:
 
 2 bit - OPcode:
 00 - NAND - RN = A NAND B
-01 - STACK - PUSH/POP RS
+01 - SPECIAL - See Special
 10 - START - Identifies start of instruction chain - sets rs and rt to r0 and r1.
 11 - END - Identifies end of instruction chain - sets rs to final output
 
 S-Type (identified by OP = 01):
 2 bit OP (identifier)
+2 bit ID (Special identifier):
+00 - STACK
+01 - READ
+10 - WRITE
+11 - TBD
+
+
+STACK: 
 1 bit PUSH or POP (0 = PUSH, 1 = POP)
 3 bit rs (input 1)
-2 bit Padding (00)
+
+READ:
+3 bit rs
+
+WRITE:
+3 bit rs
+
 
 I-type:
 2 bit OP (identifier)
