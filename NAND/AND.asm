@@ -7,3 +7,6 @@ NAND rn rn
 END r2
 
 sys WRITE r2
+
+AND r0 r1 r4
+

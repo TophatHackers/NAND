@@ -1,30 +1,36 @@
 use std::fs;
 extern crate bit_vec;
 use std::io::prelude::*;
+use std::collections::HashMap;
 
-use bit_vec::BitVec;
+
 fn main() {
 
     let filepath = "./AND.asm";
     let file = fs::read_to_string(filepath).expect("Failed to read file");
 
-    let cleanedFile = file
+    let file = file
     .split("\n")
     .filter(|l| !l.is_empty())
     .collect::<Vec<&str>>();
 
+    
 
     let define_filepath= "./define.asm";
 
-    let defineFile=fs::read_to_string(filepath).expect("Failed to read file");
+    let define_file=fs::read_to_string(define_filepath).expect("Failed to read file");
+    let define_file= define_file
+    .split("\n")
+    .filter(|l| !l.is_empty())
+    .collect::<Vec<&str>>();
 
-
-
+    let definitions=load_definition(&define_file);
+    let file=replace_macro(&file, &definitions);
  
-    let bvVector = compile(cleanedFile);
+    let bit_vector = compile(file);
    
     let mut file = fs::File::create("./a.nand").unwrap();
-    file.write_all(&bvVector);
+    file.write_all(&bit_vector);
     
 }
 
@@ -180,6 +186,61 @@ fn get_registry_number(registry:&str) -> Result<Vec<u8>,String>{
     return Ok(s.chars().map(|c| c.to_digit(10).unwrap() as u8).collect::<Vec<u8>>())
 }
 
-fn replace_macro(nand_file: Vec<&str>, define_file:Vec<&str>){
+fn replace_macro<'a>(nand_file: &'a Vec<&str>, definitions: &'a HashMap<String,String>) -> Vec<&'a str>{
+  
+    let mut replaced_file=Vec::<&str>::new();
+    for line in nand_file{
+        let split_line:Vec<&str>= line.split_whitespace().collect();
+        if definitions.contains_key(split_line[0]){
+            let definition=definitions.get(split_line[0]).unwrap();
+            let number_of_args=definition.chars().next().unwrap().to_digit(10).unwrap() as usize;
 
+            if split_line.len()-1==number_of_args{
+                let replaced_lines=definition;
+                let args:Vec<&str>= definition.split_whitespace().collect();
+                for i in 1..split_line.len(){
+                    let reg_to_replace=args[i];
+                    replaced_lines.replace(reg_to_replace, split_line[i]);
+                }
+                let replaced_lines:Vec<&str>=replaced_lines.split("\n").collect();
+                
+                for i in 1..replaced_lines.len(){
+                    replaced_file.push(replaced_lines[i]);
+                }
+            }
+        }else{
+            replaced_file.push(line);
+        }
+    }
+    println!("{:?}",replaced_file);
+    return replaced_file;
+    
+}
+
+fn load_definition(define_file: &Vec<&str>) ->  HashMap<String, String> {
+    let mut in_definition=false;
+    let mut definition=String::new();
+    let mut definition_name:String = String::new();
+    let mut definitions: HashMap<String, String> = HashMap::new();
+    
+    for line in define_file{
+         let split_lines:Vec<&str>=line.split_whitespace().collect();
+         if split_lines[0] == ".end_define"{
+            in_definition=false;
+
+            definitions.insert(definition_name.clone(), definition.clone());
+            definition= String::new();
+            definition_name= String::new();
+
+        }else if in_definition == true{
+            definition= format!("{}\n{}",definition,line)
+        }else if split_lines[0]== ".define"{
+            in_definition= true;
+            definition_name=split_lines[1].to_string();
+            let number_args=split_lines.len()-2;
+            
+            definition= format!("{} {}",number_args,split_lines[2..split_lines.len()].join(" ").trim());
+         }        
+    }
+    return definitions;
 }
