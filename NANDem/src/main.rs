@@ -16,29 +16,54 @@ fn emulate_program(instructions: Vec<String>) {
     
     // -| Init processor
 
-    let mut stack = Vec::<u32>::new();
+    static mut stack:Vec<u32> = Vec::<u32>::new();
 
-    let mut registers: [u32; 8] = [0, 0, 2, 3, 0, 0, 0, 0];
+    static mut registers: [u32; 8] = [0, 0, 2, 3, 0, 0, 0, 0];
 
     // -|
     
-    fn parse_nand(instruction: String, mut registers: [u32;8]) -> [u32;8] {
+    fn parse_nand(instruction: String) {
 
         let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
         let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
 
-        registers[1] = !(registers[rt]&registers[rs]);
-
-        registers
+        unsafe { registers[1] = !(registers[rt]&registers[rs] )};
 
     }
 
+    fn parse_sys(instruction: String) {
+
+        let id = &instruction[2..4];
+        match id {
+            "00" => {
+                let stacktype = &instruction[4..5];
+                let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
+                if stacktype == "0" {
+                    unsafe { stack.push(registers[rs]) }
+                }
+                else {
+                    unsafe { registers[rs] = stack.pop().expect("Tried popping from an empty stack!") }
+                }
+            },
+            "01" => {
+
+            }
+
+        }
+    }
+
+
+
     for instruction in instructions {
-        println!("Registers: {:?}", registers);
+        unsafe {
+            println!("Registers: {:?}", registers);
+            println!("Stack: {:?}", stack);
+        }
+
         let op = &instruction[0..2];
         match op {
-            "00" => registers = parse_nand(instruction, registers),
-            //"01" => parse_sys(instruction, registers),
+            "00" => parse_nand(instruction),
+            "01" => parse_sys(instruction),
             //"10" => parse_start(instruction, registers),
             //"11" => parse_end(instruction, registers),
             _ => continue
