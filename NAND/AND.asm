@@ -6,4 +6,4 @@ NAND r0 r1
 NAND rn rn
 END r2
 
-sys PRINT r2
+sys WRITE r2
