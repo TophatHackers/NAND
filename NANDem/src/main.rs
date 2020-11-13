@@ -19,42 +19,64 @@ fn emulate_program(binary: Vec<String>) {
 
     static mut REGISTERS: [u32; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 
+    static mut PROCESS:Vec<String> = Vec::<String>::new();
+
+    static mut PROCESSTACK:Vec<Vec<String>> = Vec::<Vec<String>>::new();
+
     // -|
 
-    fn run_process(binary: Vec<String>) {
+    fn run_process(instructions: Vec<String>) {
+        
+        let mut reachedEnd = false;
 
-        fn parse_instruction(instruction: String) {
-            unsafe {
-                println!("REGISTERS: {:?}", REGISTERS);
-                println!("STACK: {:?}", STACK);
-                println!("PROCESS: {:?}", INSTRUCTIONS);
-            }
-    
-            let op = &instruction[0..2];
-            match op {
-                "00" => parse_nand(instruction),
-                "01" => parse_sys(instruction),
-                "10" => unsafe { REGISTERS[0] += 1; },
-                "11" => unsafe { REGISTERS[0] += 1; },
-                //"10" => parse_start(instruction),
-                //"11" => parse_end(instruction, REGISTERS),
-                _ => return
-            };
+        unsafe {
+            PROCESSTACK.push(PROCESS.clone());
+            PROCESS = instructions.clone();
         }
-
-        static mut INSTRUCTIONS:Vec<String> = Vec::<String>::new();
-        unsafe { INSTRUCTIONS = binary.clone(); }
 
         unsafe {
 
-            while REGISTERS[0] < INSTRUCTIONS.len().try_into().expect("File size too large!") {
-                parse_instruction(INSTRUCTIONS[REGISTERS[0] as usize].clone());
+            while REGISTERS[0] < PROCESS.len().try_into().expect("File size too large!") && reachedEnd == false {
+                reachedEnd = parse_instruction(PROCESS[REGISTERS[0] as usize].clone());
             }
-            println!("Reached end of process for {:?}", INSTRUCTIONS);
+            
+            println!("Reached end of process for {:?}", PROCESS);
+
+            if PROCESSTACK.len() != 0 {
+                PROCESS = PROCESSTACK.pop().unwrap();
+                println!("Returning to process {:?}", PROCESS);
+            }
+
         }
         
     }
     
+    fn parse_instruction(instruction: String) -> bool {
+        let mut reachedEnd = false;
+        unsafe {
+            println!();
+            println!("REGISTERS: {:?}", REGISTERS);
+            println!("STACK: {:?}", STACK);
+            println!("PROCESS: {:?}", PROCESS);
+        }
+
+        let op = &instruction[0..2];
+        match op {
+            "00" => parse_nand(instruction),
+            "01" => parse_sys(instruction),
+            "10" => {
+                let processclone = unsafe {PROCESS.clone()};
+                parse_start(instruction, processclone);
+            },
+            "11" => {
+                parse_end(instruction);
+                reachedEnd = true;
+            },
+            _ => panic!("Invalid OP code {}", op),
+        };
+        reachedEnd
+    }
+
     fn parse_nand(instruction: String) {
 
         let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
@@ -99,8 +121,61 @@ fn emulate_program(binary: Vec<String>) {
         unsafe { REGISTERS[0] += 1; }
     }
 
-    //fn parse_start()
+    fn parse_start(instruction: String, process: Vec<String>) {
+    
 
+        let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
+        let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
+
+        let mut subprocess = Vec::<String>::new();
+
+        unsafe {
+        
+            for i in ((REGISTERS[0]+1) as usize)..process.len() {
+                let op = &process[i][0..2];
+                subprocess.push(process[i].clone());
+                if op == "11" {
+                    break;
+                }
+            }
+
+            let savedrt = REGISTERS[rt];
+            let savedrs = REGISTERS[rs];
+
+            for i in 0..8 {
+                STACK.push(REGISTERS[i]);
+                REGISTERS[i] = 0;
+            }
+
+
+            REGISTERS[2] = savedrt;
+            REGISTERS[3] = savedrs;
+
+        }
+
+        run_process(subprocess);
+
+    }
+
+    fn parse_end(instruction: String) {
+        
+        let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
+        
+        unsafe {
+            let savedrt = REGISTERS[1];
+            
+            for i in (1..8).rev() {
+                REGISTERS[i] = STACK.pop().unwrap();
+            }
+
+            let orig: u32 = STACK.pop().unwrap();
+            let offset: u32 = PROCESS.len().try_into().unwrap();
+            REGISTERS[0] = orig + offset + 1;
+            
+            REGISTERS[rt] = savedrt;
+        }
+
+    }
 
 
     run_process(binary);

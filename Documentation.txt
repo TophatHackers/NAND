@@ -8,7 +8,7 @@ Registers:
 2 bit - OPcode:
 00 - NAND - RN = A NAND B
 01 - sys - See sys
-10 - START - Identifies start of instruction chain - sets rs and rt to r0 and r1.
+10 - START - Identifies start of instruction chain - sets rt and rs to r0 and r1.
 11 - END - Identifies end of instruction chain - sets rs to final output
 
 S-Type (identified by OP = 01):
