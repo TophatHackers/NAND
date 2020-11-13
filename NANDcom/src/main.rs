@@ -179,7 +179,7 @@ fn get_registry_number(registry: &str) -> Result<Vec<u8>, String> {
         "r4" => index_registry = 6,
         "r5" => index_registry = 7,
         _ => {
-            println!("no such registry");
+            println!("no such registry {}", registry);
             return Err(String::from("no such registry"));
         }
     }
@@ -257,29 +257,25 @@ fn load_definition(define_file: &Vec<&str>) -> HashMap<String, String> {
 }
 
 fn parse_args(args: &[String]) -> Result<(&str, &str, &str), String> {
-    let mut input_path: &str = "./AND.asm";
-    let mut output_path: &str = "./a.nand";
-    let mut define_path: &str = "./define.asm";
+    let mut input_path: &str = "AND.asm";
+    let mut output_path: &str = "a.nand";
+    let mut define_path: &str = "define.asm";
 
 
     if args.len() > 1 {
-        if args[1] != "nandcc" {
-            return Err(format!("No command {}", args[0]));
-        } else {
-            for (i, arg) in args.iter().enumerate() {
-                if arg.chars().next().unwrap() == '-' {
-                    match arg.chars().nth(1).unwrap() {
-                        'o' => {
-                            if i >= args.len() - 2 {
-                                return Err(String::from("Please specify output name"));
-                            }
-                            output_path = &args[i + 1 ];
+        for (i, arg) in args.iter().enumerate() {
+            if arg.chars().next().unwrap() == '-' {
+                match arg.chars().nth(1).unwrap() {
+                    'o' => {
+                        if i >= args.len() - 2 {
+                            return Err(String::from("Please specify output name"));
                         }
-                        _ => return Err(String::from("No such flag")),
+                        output_path = &args[i + 1 ];
                     }
-                } else {
-                    input_path = &arg;
+                    _ => return Err(String::from("No such flag")),
                 }
+            } else {
+                input_path = &arg;
             }
         }
     }
