@@ -58,3 +58,37 @@ sys STACK POP r2
 NAND r2 rn
 END rt
 .end_define
+
+.define ADDER r0 r1 r4 rt
+START r0 r1
+NAND r0 r1
+sys STACK PUSH rn
+sys STACK PUSH rn
+NAND rn r1
+sys STACK POP r2
+sys STACK PUSH rn
+NAND r0 r2
+sys STACK POP r2
+NAND rn r2
+sys STACK PUSH rn
+NAND r4 rn
+sys STACK POP r2
+sys STACK PUSH rn
+sys STACK PUSH rn
+NAND rn r2
+sys STACK POP r2
+sys STACK PUSH rn
+NAND r4 r2
+sys STACK POP r2
+NAND rn r2
+sys STACK POP r2
+sys STACK POP r3
+sys STACK PUSH rn
+NAND r3 r2
+sys STACK POP r2
+sys STACK PUSH rn
+sys STACK POP r4
+sys STACK PUSH r2
+sys STACK POP rn
+END rt
+.end_define

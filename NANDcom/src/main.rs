@@ -208,10 +208,8 @@ fn replace_macro<'a>(
                 let args: Vec<&str> = definition.split_whitespace().collect();
                 for i in 1..split_line.len() {
                     let reg_to_replace = args[i];
-                    println!("{}", reg_to_replace);
-                    println!("{}", split_line[i]);
                     replaced_lines = replaced_lines.replace(reg_to_replace, split_line[i]);
-                    println!("{}", replaced_lines);
+                    
                 }
                 let replaced_lines: Vec<String> =
                     replaced_lines.split("\n").map(|l| l.to_string()).collect();
