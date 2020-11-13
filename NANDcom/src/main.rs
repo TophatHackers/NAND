@@ -17,7 +17,6 @@ fn main() {
         filepath = tuple.0;
         output_path = tuple.1;
         define_filepath = tuple.2;
-        
     } else {
         println!("{}", arg_parsing.err().unwrap());
         return;
@@ -209,7 +208,6 @@ fn replace_macro<'a>(
                 for i in 1..split_line.len() {
                     let reg_to_replace = args[i];
                     replaced_lines = replaced_lines.replace(reg_to_replace, split_line[i]);
-                    
                 }
                 let replaced_lines: Vec<String> =
                     replaced_lines.split("\n").map(|l| l.to_string()).collect();
@@ -261,25 +259,23 @@ fn parse_args(args: &[String]) -> Result<(&str, &str, &str), String> {
     let mut output_path: &str = "./a.nand";
     let mut define_path: &str = "./define.asm";
 
-
     if args.len() > 1 {
-        if args[1] != "nandcc" {
-            return Err(format!("No command {}", args[0]));
-        } else {
-            for (i, arg) in args.iter().enumerate() {
-                if arg.chars().next().unwrap() == '-' {
-                    match arg.chars().nth(1).unwrap() {
-                        'o' => {
-                            if i >= args.len() - 2 {
-                                return Err(String::from("Please specify output name"));
-                            }
-                            output_path = &args[i + 1 ];
+        for (i, arg) in args.iter().enumerate() {
+            if arg.chars().next().unwrap() == '-' {
+                match arg.chars().nth(1).unwrap() {
+                    'o' => {
+                        if i >= args.len() - 1 {
+                            return Err(String::from("Please specify output name"));
                         }
-                        _ => return Err(String::from("No such flag")),
+                        output_path = &args[i + 1];
                     }
-                } else {
-                    input_path = &arg;
+                    _ => return Err(String::from("No such flag")),
                 }
+            } else {
+                if arg==output_path{
+                    continue;
+                }
+                input_path = &arg;
             }
         }
     }
