@@ -17,7 +17,6 @@ fn main() {
         filepath = tuple.0;
         output_path = tuple.1;
         define_filepath = tuple.2;
-        
     } else {
         println!("{}", arg_parsing.err().unwrap());
         return;
@@ -209,7 +208,6 @@ fn replace_macro<'a>(
                 for i in 1..split_line.len() {
                     let reg_to_replace = args[i];
                     replaced_lines = replaced_lines.replace(reg_to_replace, split_line[i]);
-                    
                 }
                 let replaced_lines: Vec<String> =
                     replaced_lines.split("\n").map(|l| l.to_string()).collect();
@@ -261,20 +259,22 @@ fn parse_args(args: &[String]) -> Result<(&str, &str, &str), String> {
     let mut output_path: &str = "a.nand";
     let mut define_path: &str = "define.asm";
 
-
     if args.len() > 1 {
         for (i, arg) in args.iter().enumerate() {
             if arg.chars().next().unwrap() == '-' {
                 match arg.chars().nth(1).unwrap() {
                     'o' => {
-                        if i >= args.len() - 2 {
+                        if i >= args.len() - 1 {
                             return Err(String::from("Please specify output name"));
                         }
-                        output_path = &args[i + 1 ];
+                        output_path = &args[i + 1];
                     }
                     _ => return Err(String::from("No such flag")),
                 }
             } else {
+                if arg==output_path{
+                    continue;
+                }
                 input_path = &arg;
             }
         }
