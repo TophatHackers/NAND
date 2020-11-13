@@ -11,15 +11,49 @@ fn main() {
 
 }
 
-fn emulate_program(instructions: Vec<String>) {
+fn emulate_program(binary: Vec<String>) {
     
     // -| Init processor
 
-    static mut stack:Vec<u32> = Vec::<u32>::new();
+    static mut STACK:Vec<u32> = Vec::<u32>::new();
 
-    static mut registers: [u32; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
+    static mut REGISTERS: [u32; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 
     // -|
+
+    fn run_process(binary: Vec<String>) {
+
+        fn parse_instruction(instruction: String) {
+            unsafe {
+                println!("REGISTERS: {:?}", REGISTERS);
+                println!("STACK: {:?}", STACK);
+                println!("PROCESS: {:?}", INSTRUCTIONS);
+            }
+    
+            let op = &instruction[0..2];
+            match op {
+                "00" => parse_nand(instruction),
+                "01" => parse_sys(instruction),
+                "10" => unsafe { REGISTERS[0] += 1; },
+                "11" => unsafe { REGISTERS[0] += 1; },
+                //"10" => parse_start(instruction),
+                //"11" => parse_end(instruction, REGISTERS),
+                _ => return
+            };
+        }
+
+        static mut INSTRUCTIONS:Vec<String> = Vec::<String>::new();
+        unsafe { INSTRUCTIONS = binary.clone(); }
+
+        unsafe {
+
+            while REGISTERS[0] < INSTRUCTIONS.len().try_into().expect("File size too large!") {
+                parse_instruction(INSTRUCTIONS[REGISTERS[0] as usize].clone());
+            }
+            println!("Reached end of process for {:?}", INSTRUCTIONS);
+        }
+        
+    }
     
     fn parse_nand(instruction: String) {
 
@@ -27,8 +61,8 @@ fn emulate_program(instructions: Vec<String>) {
         let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
 
         unsafe { 
-            registers[1] = !(registers[rt]&registers[rs]);
-            registers[0] += 1;
+            REGISTERS[1] = !(REGISTERS[rt]&REGISTERS[rs]);
+            REGISTERS[0] += 1;
         }
         
 
@@ -39,13 +73,13 @@ fn emulate_program(instructions: Vec<String>) {
         let id = &instruction[2..4];
         match id {
             "00" => {
-                let stacktype = &instruction[4..5];
+                let STACKtype = &instruction[4..5];
                 let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
-                if stacktype == "0" {
-                    unsafe { stack.push(registers[rs]) }
+                if STACKtype == "0" {
+                    unsafe { STACK.push(REGISTERS[rs]) }
                 }
                 else {
-                    unsafe { registers[rs] = stack.pop().expect("Tried popping from an empty stack!") }
+                    unsafe { REGISTERS[rs] = STACK.pop().expect("Tried popping from an empty STACK!") }
                 }
             },
             "01" => {
@@ -53,43 +87,25 @@ fn emulate_program(instructions: Vec<String>) {
                 let mut input = String::new();
                 io::stdin().read_line(&mut input).expect("Failed to read input!");
                 let input = input.trim().parse::<u32>().expect("Expected u32 integer!");
-                unsafe { registers[rs] = input }
+                unsafe { REGISTERS[rs] = input }
             }
             "10" => {
                 let rs = usize::from_str_radix(&instruction[4..7], 2).unwrap();
-                unsafe { println!("{}", registers[rs] ) }
+                unsafe { println!("{}", REGISTERS[rs] ) }
             }
             _ => panic!("Invalid instruction at {}!", instruction),
         };
 
-        unsafe { registers[0] += 1; }
+        unsafe { REGISTERS[0] += 1; }
     }
 
-    fn parse_instruction(instruction: String) {
-        unsafe {
-            println!("Registers: {:?}", registers);
-            println!("Stack: {:?}", stack);
-        }
+    //fn parse_start()
 
-        let op = &instruction[0..2];
-        match op {
-            "00" => parse_nand(instruction),
-            "01" => parse_sys(instruction),
-            "10" => unsafe { registers[0] += 1; },
-            "11" => unsafe { registers[0] += 1; },
-            //"10" => parse_start(instruction, registers),
-            //"11" => parse_end(instruction, registers),
-            _ => return
-        };
-    }
 
-    unsafe {
 
-        while registers[0] < instructions.len().try_into().expect("File size too large!") {
-            parse_instruction(instructions[registers[0] as usize].clone());
-        }
-    }
-    println!("Reached end of process {:?}", instructions);
+    run_process(binary);
+
+    println!("Reached EOF!");
 
 } 
 
