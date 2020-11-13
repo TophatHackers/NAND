@@ -1,4 +1,4 @@
-use std::{env, fs, io};
+use std::{env, fs, io, convert::TryInto};
 use u32;
 
 fn main() {
@@ -26,7 +26,11 @@ fn emulate_program(instructions: Vec<String>) {
         let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
         let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
 
-        unsafe { registers[1] = !(registers[rt]&registers[rs] )};
+        unsafe { 
+            registers[1] = !(registers[rt]&registers[rs]);
+            registers[0] += 1;
+        }
+        
 
     }
 
@@ -57,11 +61,11 @@ fn emulate_program(instructions: Vec<String>) {
             }
             _ => panic!("Invalid instruction at {}!", instruction),
         };
+
+        unsafe { registers[0] += 1; }
     }
 
-
-
-    for instruction in instructions {
+    fn parse_instruction(instruction: String) {
         unsafe {
             println!("Registers: {:?}", registers);
             println!("Stack: {:?}", stack);
@@ -71,11 +75,21 @@ fn emulate_program(instructions: Vec<String>) {
         match op {
             "00" => parse_nand(instruction),
             "01" => parse_sys(instruction),
+            "10" => unsafe { registers[0] += 1; },
+            "11" => unsafe { registers[0] += 1; },
             //"10" => parse_start(instruction, registers),
             //"11" => parse_end(instruction, registers),
-            _ => continue
+            _ => return
         };
     }
+
+    unsafe {
+
+        while registers[0] < instructions.len().try_into().expect("File size too large!") {
+            parse_instruction(instructions[registers[0] as usize].clone());
+        }
+    }
+    println!("Reached end of process {:?}", instructions);
 
 } 
 
