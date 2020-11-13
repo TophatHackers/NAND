@@ -1,5 +1,4 @@
-use std::env;
-use std::fs;
+use std::{env, fs, io};
 use u32;
 
 fn main() {
@@ -18,7 +17,7 @@ fn emulate_program(instructions: Vec<String>) {
 
     static mut stack:Vec<u32> = Vec::<u32>::new();
 
-    static mut registers: [u32; 8] = [0, 0, 2, 3, 0, 0, 0, 0];
+    static mut registers: [u32; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 
     // -|
     
@@ -46,10 +45,18 @@ fn emulate_program(instructions: Vec<String>) {
                 }
             },
             "01" => {
-
+                let rs = usize::from_str_radix(&instruction[4..7], 2).unwrap();
+                let mut input = String::new();
+                io::stdin().read_line(&mut input).expect("Failed to read input!");
+                let input = input.trim().parse::<u32>().expect("Expected u32 integer!");
+                unsafe { registers[rs] = input }
             }
-
-        }
+            "10" => {
+                let rs = usize::from_str_radix(&instruction[4..7], 2).unwrap();
+                unsafe { println!("{}", registers[rs] ) }
+            }
+            _ => panic!("Invalid instruction at {}!", instruction),
+        };
     }
 
 
