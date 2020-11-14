@@ -186,6 +186,9 @@ fn emulate_program(binary: Vec<String>) {
 
 fn load_binary() -> Vec<String> {
     let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        panic!("Requires file to run!")
+    }
     let filepath = &args[1];
     let file = fs::read(filepath).expect("Failed to read file");
     let mut instructionvec = Vec::<String>::new();

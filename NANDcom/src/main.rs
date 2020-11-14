@@ -178,7 +178,7 @@ fn get_registry_number(registry: &str) -> Result<Vec<u8>, String> {
         "r4" => index_registry = 6,
         "r5" => index_registry = 7,
         _ => {
-            println!("no such registry");
+            println!("no such registry {}", registry);
             return Err(String::from("no such registry"));
         }
     }
@@ -255,9 +255,9 @@ fn load_definition(define_file: &Vec<&str>) -> HashMap<String, String> {
 }
 
 fn parse_args(args: &[String]) -> Result<(&str, &str, &str), String> {
-    let mut input_path: &str = "./AND.asm";
-    let mut output_path: &str = "./a.nand";
-    let mut define_path: &str = "./define.asm";
+    let mut input_path: &str = "AND.asm";
+    let mut output_path: &str = "a.nand";
+    let mut define_path: &str = "define.asm";
 
     if args.len() > 1 {
         for (i, arg) in args.iter().enumerate() {
