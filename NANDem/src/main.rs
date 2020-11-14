@@ -1,8 +1,6 @@
 use std::{env, fs, io, convert::TryInto};
 use u32;
 
-// TODO: Pass references of original binary instead of cloning everywhere
-
 fn main() {
 
     let binary = load_binary();
