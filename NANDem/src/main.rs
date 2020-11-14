@@ -58,13 +58,16 @@ fn emulate_program(binary: Vec<String>) {
     }
     
     fn parse_instruction(instruction: String) -> bool {
-
-        let mut reachedEnd = false;
+        
+        let mut reached_end = false;
         unsafe {
             println!();
             println!("REGISTERS: {:?}", REGISTERS);
             println!("STACK: {:?}", STACK);
             println!("PROCESS: {:?}", PROCESS);
+            //println!("PROCESSSTACK: {:?}", PROCESSTACK);
+            //println!("REGISTRYSTACK: {:?}", REGISTRYSTACK);
+            println!("Current instruction: {}", instruction);
         }
 
         let op = &instruction[0..2];
@@ -76,7 +79,7 @@ fn emulate_program(binary: Vec<String>) {
                 match id {
                     "000" => {
                         parse_end(instruction);
-                        reachedEnd = true;
+                        reached_end = true;
                     }
                     _ => {
                         let processclone = unsafe {PROCESS.clone()};
@@ -90,7 +93,7 @@ fn emulate_program(binary: Vec<String>) {
             },
             _ => panic!("Invalid OP code {}", op),
         };
-        reachedEnd
+        reached_end
     }
 
     fn parse_bit(instruction: String) {
@@ -170,14 +173,17 @@ fn emulate_program(binary: Vec<String>) {
         let mut subprocess = Vec::<String>::new();
 
         unsafe {
-        
             for i in ((REGISTERS[0]+1) as usize)..process.len() {
                 let op = &process[i][0..2];
                 subprocess.push(process[i].clone());
-                if op == "11" {
-                    break;
+                if op == "10" {
+                    if &process[i][5..8] == "000" {
+                        break;
+                    }
+                    
                 }
-            }
+                
+            }   
 
             let savedrt = REGISTERS[rt];
             let savedrs = REGISTERS[rs];
@@ -210,6 +216,7 @@ fn emulate_program(binary: Vec<String>) {
 
             let orig: u32 = REGISTRYSTACK.pop().unwrap();
             let offset: u32 = PROCESS.len().try_into().unwrap();
+            println!("\n\n{} + {} + 1, previous: {} with len \n\n", orig, offset, REGISTERS[0]);
             REGISTERS[0] = orig + offset + 1;
             
             REGISTERS[rt] = savedrt;
