@@ -124,7 +124,7 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                 }
             }
             "END" => {
-                set_bits(&mut bv, 7, vec![1, 1]);
+                set_bits(&mut bv, 7, vec![1, 0]);
                 let registry1_number = get_registry_number(split_line[1]);
                 match registry1_number {
                     Ok(v) => set_bits(&mut bv, 5, v),
@@ -152,6 +152,24 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                         break;
                     }
                 }
+            }
+            "BIT" =>{
+                set_bits(&mut bv, 7, vec![1,1]);
+                match split_line[1]{
+                    "READ"=>{
+                        set_bits(&mut bv, 5, vec![0])
+                    },
+                    "WRITE" =>{
+                        set_bits(&mut bv, 5, vec![1])
+                    },
+                    _ => {
+                        panic!("BIT has no such command {}",split_line[1]);
+                    }
+                }
+
+                let imm=format!("{:0>5b}",split_line[2].parse::<u8>().unwrap()).chars().map(|c| c.to_digit(2).unwrap() as u8).collect::<Vec<u8>>();
+                set_bits(&mut bv, 4, imm);
+
             }
             _ => println!("unknown command {}", split_line[0]),
         }
@@ -199,12 +217,33 @@ fn replace_macro<'a>(
     for line in nand_file {
         let split_line: Vec<&str> = line.split_whitespace().collect();
         if definitions.contains_key(split_line[0]) {
-            let definition = definitions.get(split_line[0]).unwrap().clone();
+            let  mut definition = definitions.get(split_line[0]).unwrap().clone();
             let number_of_args = definition[0].parse::<usize>().unwrap();
+            definition.remove(0);
 
             if split_line.len() - 1 == number_of_args {
                 let mut replaced_lines = definition.clone();
-                let args: Vec<&str> = definition[1].split_whitespace().collect();
+                let args_str=definition[0].clone();
+                let args: Vec<&str> = args_str.split_whitespace().collect();
+                definition.remove(0);
+                let mut counter=0;
+                loop{
+                    if definitions.contains_key(replaced_lines[counter].split_whitespace().next().unwrap()){
+                        let macro_definition=replace_macro(&replaced_lines, definitions);
+                        replaced_lines.remove(counter);
+                        replaced_lines.splice(counter..counter, macro_definition);
+                    }
+
+                    for i in 1..split_line.len() {
+                        let reg_to_replace = args[i-1];
+                        replaced_lines[counter] = replaced_lines[counter].replace(reg_to_replace, split_line[i]);
+                    }
+
+                    if counter==replaced_lines.len()-1{
+                        break;
+                    }
+                    counter+=1;
+                }
                 for j in 2..replaced_lines.len() {
                     for i in 1..split_line.len() {
                         let reg_to_replace = args[i-1];
@@ -267,19 +306,19 @@ fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
     }
 
     
-    let mut found_macro=true;
-    while found_macro {
-        found_macro=false;
-        let temp_def= definitions.clone();
-        for def in &mut definitions{
-            let new_def=replace_macro(&def.1, &temp_def);
-            if &new_def!=def.1 {
-                *def.1=new_def;
-                found_macro=true;
-            }
-        }
+    // let mut found_macro=true;
+    // while found_macro {
+    //     found_macro=false;
+    //     let temp_def= definitions.clone();
+    //     for def in &mut definitions{
+    //         let new_def=replace_macro(&def.1, &temp_def);
+    //         if &new_def!=def.1 {
+    //             *def.1=new_def;
+    //             found_macro=true;
+    //         }
+    //     }
 
-    }
+    // }
     
 
     return definitions;
@@ -316,4 +355,6 @@ impl Paths{
         return Ok(Paths{filepath, define_filepath,output_filepath});
     }
 }
+
+
 
