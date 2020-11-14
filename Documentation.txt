@@ -9,7 +9,7 @@ Registers:
 00 - NAND - RN = A NAND B
 01 - sys - See sys
 10 - Loop (START/END) - START/END identified by last 3 bits, if all are 0 then END otherwise START
-11 - BIT - read/writes specific bit in rn given by 5bit imm
+11 - BIT - read/writes specific bit in r4 given by 5bit imm and pushes to r5, i.e r4 = r5[imm] or r4[imm] = r5 
 
 Sys (identified by OP = 01):
 2 bit OP (identifier)
