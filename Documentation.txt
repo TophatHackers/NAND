@@ -50,3 +50,9 @@ BIT:
 2 bit OP (identifier)
 1 bit ID (0 = read, 1 = write)
 5 bit Index (IMM 0-31)
+
+bit READ:
+r5 = r4[imm]
+
+bit WRITE:
+r4[imm] = r5

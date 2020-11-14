@@ -99,7 +99,13 @@ fn emulate_program(binary: Vec<String>) {
                 REGISTERS[7] = format!("{:0>32b}", REGISTERS[6]).chars().nth(imm).unwrap().to_digit(2).unwrap();
             }
             
-        } 
+        }
+        // Write
+        else {
+            unsafe {
+
+            }
+        }
 
     }
 
