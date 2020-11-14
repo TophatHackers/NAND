@@ -63,7 +63,7 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                             "PUSH" => set_bits(&mut bv, 3, vec![0]),
                             _ => {
                                 println!("STACK can only PUSH or POP");
-                                break;
+                                process::exit(1);
                             }
                         }
                         let registry_number = get_registry_number(split_line[3]);
@@ -130,7 +130,7 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                     Ok(v) => set_bits(&mut bv, 5, v),
                     Err(s) => {
                         println!("{}", s);
-                        break;
+                        process::exit(1);
                     }
                 }
             }
@@ -141,7 +141,7 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                     Ok(v) => set_bits(&mut bv, 5, v),
                     Err(s) => {
                         println!("{}", s);
-                        break;
+                        process::exit(1);
                     }
                 };
                 let registry2_number = get_registry_number(split_line[2]);
@@ -149,7 +149,7 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                     Ok(v) => set_bits(&mut bv, 2, v),
                     Err(s) => {
                         println!("{}", s);
-                        break;
+                        process::exit(1);
                     }
                 }
             }
@@ -176,8 +176,10 @@ fn compile(file: Vec<String>) -> Vec<u8> {
         let mut number: u8 = 0;
         let base: u8 = 2;
         for (i, b) in bv.iter().enumerate() {
-            number += base.pow((7 - i) as u32) * b
+            number += base.pow((7 - i) as u32) * b;
+         
         }
+        
         bvVector.push(number);
     }
 
@@ -220,16 +222,21 @@ fn replace_macro<'a>(
             let  mut definition = definitions.get(split_line[0]).unwrap().clone();
             let number_of_args = definition[0].parse::<usize>().unwrap();
             definition.remove(0);
+           
 
             if split_line.len() - 1 == number_of_args {
                 let mut replaced_lines = definition.clone();
                 let args_str=definition[0].clone();
                 let args: Vec<&str> = args_str.split_whitespace().collect();
                 definition.remove(0);
+                replaced_lines.remove(0);
+                
                 let mut counter=0;
                 loop{
+                    //println!("{}",replaced_lines[counter]);
                     if definitions.contains_key(replaced_lines[counter].split_whitespace().next().unwrap()){
                         let macro_definition=replace_macro(&replaced_lines, definitions);
+                        
                         replaced_lines.remove(counter);
                         replaced_lines.splice(counter..counter, macro_definition);
                     }
@@ -237,6 +244,7 @@ fn replace_macro<'a>(
                     for i in 1..split_line.len() {
                         let reg_to_replace = args[i-1];
                         replaced_lines[counter] = replaced_lines[counter].replace(reg_to_replace, split_line[i]);
+                        
                     }
 
                     if counter==replaced_lines.len()-1{
@@ -244,14 +252,8 @@ fn replace_macro<'a>(
                     }
                     counter+=1;
                 }
-                for j in 2..replaced_lines.len() {
-                    for i in 1..split_line.len() {
-                        let reg_to_replace = args[i-1];
-                        replaced_lines[j] = replaced_lines[j].replace(reg_to_replace, split_line[i]);
-                    }
-                }
-
-                for i in 2..replaced_lines.len() {
+                
+                for i in 0..replaced_lines.len() {
                     replaced_file.push(replaced_lines[i].clone());
                 }
             }
@@ -320,10 +322,9 @@ fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
 
     // }
     
-
+        println!("{:?}",definitions);
     return definitions;
 }
-
 
 impl Paths{
     fn new(args: &[String])-> Result<Paths,String>{
@@ -355,6 +356,3 @@ impl Paths{
         return Ok(Paths{filepath, define_filepath,output_filepath});
     }
 }
-
-
-

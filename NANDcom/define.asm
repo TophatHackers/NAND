@@ -1,10 +1,16 @@
+.define MOVE rs rt
+START rs rt
+sys STACK PUSH rt
+sys STACK POP rn
+END rs
+.end_define
+
 .define AND r0 r1 rt
 START r0 r1
 NAND r0 r1
 NAND rn rn
 END rt
 .end_define
-
 
 .define OR r0 r1 rt
 START r0 r1 
@@ -43,14 +49,6 @@ END rt
 START r0 r1
 NAND r0 r0
 END rt
-.end_define
-
-.define TEST r1 r2 rt
-AND r1 r2 rt
-.end_define
-
-.define NOTAND r0 r1 rt
-TEST r0 r1 rt
 .end_define
 
 .define XNOR r0 r1 rt
