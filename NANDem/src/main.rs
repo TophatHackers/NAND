@@ -1,6 +1,8 @@
 use std::{env, fs, io, convert::TryInto};
 use u32;
 
+// TODO: Pass references of original binary instead of cloning everywhere
+
 fn main() {
 
     let binary = load_binary();
@@ -88,11 +90,15 @@ fn emulate_program(binary: Vec<String>) {
 
     fn parse_bit(instruction: String) {
 
-        let IO = &instruction[2..3];
-        let IMM = usize::from_str_radix(&instruction[3..8], 2).unwrap();
+        let io = &instruction[2..3];
+        let imm = usize::from_str_radix(&instruction[3..8], 2).unwrap();
 
-        if IO == "0" {
-
+        // Read
+        if io == "0" {
+            unsafe {
+                REGISTERS[7] = format!("{:0>32b}", REGISTERS[6]).chars().nth(imm).unwrap().to_digit(2).unwrap();
+            }
+            
         } 
 
     }
