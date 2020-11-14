@@ -65,16 +65,36 @@ fn emulate_program(binary: Vec<String>) {
             "00" => parse_nand(instruction),
             "01" => parse_sys(instruction),
             "10" => {
-                let processclone = unsafe {PROCESS.clone()};
-                parse_start(instruction, processclone);
+                let id = &instruction[5..8];
+                match id {
+                    "000" => {
+                        parse_end(instruction);
+                        reachedEnd = true;
+                    }
+                    _ => {
+                        let processclone = unsafe {PROCESS.clone()};
+                        parse_start(instruction, processclone);
+                    }
+                }
+
             },
             "11" => {
-                parse_end(instruction);
-                reachedEnd = true;
+                parse_bit(instruction);
             },
             _ => panic!("Invalid OP code {}", op),
         };
         reachedEnd
+    }
+
+    fn parse_bit(instruction: String) {
+
+        let IO = &instruction[2..3];
+        let IMM = usize::from_str_radix(&instruction[3..8], 2).unwrap();
+
+        if IO == "0" {
+
+        } 
+
     }
 
     fn parse_nand(instruction: String) {
