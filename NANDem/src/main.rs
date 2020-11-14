@@ -103,7 +103,11 @@ fn emulate_program(binary: Vec<String>) {
         // Write
         else {
             unsafe {
-
+                let mut binr4: Vec<char> = format!("{:0>32b}", REGISTERS[6]).chars().collect();
+                let r5bit = format!("{:0>32b}", REGISTERS[5]).chars().next().unwrap();
+                binr4[imm] = r5bit;
+                let u32r4: String = binr4.into_iter().collect();
+                REGISTERS[6] = u32::from_str_radix(&u32r4, 2).unwrap();
             }
         }
 
