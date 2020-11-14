@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::{env, fs, io, convert::TryInto};
 use u32;
 
@@ -25,11 +27,13 @@ fn emulate_program(binary: Vec<String>) {
 
     static mut PROCESSTACK:Vec<Vec<String>> = Vec::<Vec<String>>::new();
 
+    static mut REGISTRYSTACK:Vec<u32> = Vec::<u32>::new();
+
     // -|
 
     fn run_process(instructions: Vec<String>) {
         
-        let mut reachedEnd = false;
+        let mut reached_end = false;
 
         unsafe {
             PROCESSTACK.push(PROCESS.clone());
@@ -38,8 +42,8 @@ fn emulate_program(binary: Vec<String>) {
 
         unsafe {
 
-            while REGISTERS[0] < PROCESS.len().try_into().expect("File size too large!") && reachedEnd == false {
-                reachedEnd = parse_instruction(PROCESS[REGISTERS[0] as usize].clone());
+            while REGISTERS[0] < PROCESS.len().try_into().expect("File size too large!") && reached_end == false {
+                reached_end = parse_instruction(PROCESS[REGISTERS[0] as usize].clone());
             }
             
             println!("Reached end of process for {:?}", PROCESS);
@@ -54,6 +58,7 @@ fn emulate_program(binary: Vec<String>) {
     }
     
     fn parse_instruction(instruction: String) -> bool {
+
         let mut reachedEnd = false;
         unsafe {
             println!();
@@ -158,7 +163,6 @@ fn emulate_program(binary: Vec<String>) {
     }
 
     fn parse_start(instruction: String, process: Vec<String>) {
-    
 
         let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
         let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
@@ -179,7 +183,7 @@ fn emulate_program(binary: Vec<String>) {
             let savedrs = REGISTERS[rs];
 
             for i in 0..8 {
-                STACK.push(REGISTERS[i]);
+                REGISTRYSTACK.push(REGISTERS[i]);
                 REGISTERS[i] = 0;
             }
 
@@ -194,17 +198,17 @@ fn emulate_program(binary: Vec<String>) {
     }
 
     fn parse_end(instruction: String) {
-        
+
         let rt = usize::from_str_radix(&instruction[2..5], 2).unwrap();
         
         unsafe {
             let savedrt = REGISTERS[1];
             
             for i in (1..8).rev() {
-                REGISTERS[i] = STACK.pop().unwrap();
+                REGISTERS[i] = REGISTRYSTACK.pop().unwrap();
             }
 
-            let orig: u32 = STACK.pop().unwrap();
+            let orig: u32 = REGISTRYSTACK.pop().unwrap();
             let offset: u32 = PROCESS.len().try_into().unwrap();
             REGISTERS[0] = orig + offset + 1;
             
