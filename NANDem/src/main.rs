@@ -104,7 +104,7 @@ fn emulate_program(binary: Vec<String>) {
         // Read
         if io == "0" {
             unsafe {
-                REGISTERS[7] = format!("{:0>32b}", REGISTERS[6]).chars().nth(imm).unwrap().to_digit(2).unwrap();
+                REGISTERS[7] = format!("{:0>32b}", REGISTERS[6]).chars().nth(31-imm).unwrap().to_digit(2).unwrap();
             }
             
         }
@@ -117,9 +117,10 @@ fn emulate_program(binary: Vec<String>) {
                 binr4[31-imm] = r5bit; // Big endian
                 let u32r4: String = binr4.into_iter().collect();
                 REGISTERS[6] = u32::from_str_radix(&u32r4, 2).unwrap();
-                REGISTERS[0] += 1;
             }
         }
+
+        unsafe { REGISTERS[0] += 1; }
 
     }
 
