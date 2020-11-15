@@ -1,3 +1,18 @@
+- [NAND](#nand)
+- [Specifications](#specifications)
+  - [Registers](#registers)
+  - [Instructions](#instructions)
+    - [NAND](#nand-1)
+    - [SYS](#sys)
+      - [STACK](#stack)
+      - [READ](#read)
+      - [WRITE](#write)
+    - [LOOP](#loop)
+      - [START](#start)
+      - [END](#end)
+    - [BIT](#bit)
+
+
 # NAND
 Groundbreaking NAND language based on the universal NAND gate.
 
