@@ -1,6 +1,10 @@
 # NAND
 Groundbreaking NAND language based on the universal NAND gate.
 
+
+
+# Specifications
+
 ## Registers
 
 | **Register encoding** | **Register name** | **Description**                                                                 |
@@ -16,12 +20,12 @@ Groundbreaking NAND language based on the universal NAND gate.
 
 ## Instructions
 
-| **2 bit** | **OPcode** |
-| :-------- | :--------- |
-| `00`      | `NAND`     |
-| `01`      | `SYS`      |
-| `10`      | `LOOP`     |
-| `11`      | `BIT`      |
+| **Encoding** | **OPcode** |
+| :----------- | :--------- |
+| `0`          | `NAND`     |
+| `1`          | `SYS`      |
+| `2`          | `LOOP`     |
+| `3`          | `BIT`      |
 
 ### NAND
 
@@ -35,3 +39,47 @@ Groundbreaking NAND language based on the universal NAND gate.
 NANDS the first register with the second and saves it in rn.
 
 `rn = rs NAND rt`
+
+### SYS
+
+| **ID Encoding** | **Description** |
+| :-------------- | :-------------- |
+| `0`             | Handle stack    |
+| `1`             | Read from stdin |
+| `2`             | Write to stdin  |
+| `3`             | TBD             |
+
+#### STACK
+
+| **Encoding** | **Description**                                             |
+| :----------- | :---------------------------------------------------------- |
+| `op<7:6>`    | Identifies SYS instruction                                  |
+| `id<5:4>`    | Identifies type of syscall                                  |
+| `type<3>`    | Type of stack operation, push or pop. `0 = push`, `1 = pop` |
+| `rs<2:0>`    | Register to push/pop                                        |
+
+#### READ
+
+| **Encoding** | **Description**                        |
+| :----------- | :------------------------------------- |
+| `op<7:6>`    | Identifies SYS instruction             |
+| `id<5:4>`    | Identifies type of syscall             |
+| `rs<3:1>`    | Register to read integer from stdin to |
+| `<0>`        | TBD, currently padding.                |
+
+#### WRITE
+
+| **Encoding** | **Description**                 |
+| :----------- | :------------------------------ |
+| `op<7:6>`    | Identifies SYS instruction      |
+| `id<5:4>`    | Identifies type of syscall      |
+| `rs<3:1>`    | Register to write to stdin from |
+| `<0>`        | TBD, currently padding.         |
+
+### LOOP
+
+
+
+
+
+
