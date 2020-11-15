@@ -46,11 +46,11 @@ fn emulate_program(binary: Vec<String>) {
                 reached_end = parse_instruction(PROCESS[REGISTERS[0] as usize].clone());
             }
             
-            println!("Reached end of process for {:?}", PROCESS);
+            //println!("Reached end of process for {:?}", PROCESS);
 
             if PROCESSTACK.len() != 0 {
                 PROCESS = PROCESSTACK.pop().unwrap();
-                println!("Returning to process {:?}", PROCESS);
+                //println!("Returning to process {:?}", PROCESS);
             }
 
         }
@@ -61,13 +61,13 @@ fn emulate_program(binary: Vec<String>) {
         
         let mut reached_end = false;
         unsafe {
-            println!();
-            println!("REGISTERS: {:?}", REGISTERS);
-            println!("STACK: {:?}", STACK);
-            println!("PROCESS: {:?}", PROCESS);
+            //println!();
+            //println!("REGISTERS: {:?}", REGISTERS);
+            //println!("STACK: {:?}", STACK);
+            //println!("PROCESS: {:?}", PROCESS);
             //println!("PROCESSSTACK: {:?}", PROCESSTACK);
             //println!("REGISTRYSTACK: {:?}", REGISTRYSTACK);
-            println!("Current instruction: {}", instruction);
+            //println!("Current instruction: {}", instruction);
         }
 
         let op = &instruction[0..2];
@@ -173,12 +173,20 @@ fn emulate_program(binary: Vec<String>) {
         let mut subprocess = Vec::<String>::new();
 
         unsafe {
+            let mut depthcounter = 1;
             for i in ((REGISTERS[0]+1) as usize)..process.len() {
                 let op = &process[i][0..2];
                 subprocess.push(process[i].clone());
                 if op == "10" {
                     if &process[i][5..8] == "000" {
-                        break;
+                        depthcounter -= 1;
+                        if depthcounter == 0 {
+                            break;
+                        }
+                        
+                    }
+                    else {
+                        depthcounter += 1;
                     }
                     
                 }
@@ -216,7 +224,6 @@ fn emulate_program(binary: Vec<String>) {
 
             let orig: u32 = REGISTRYSTACK.pop().unwrap();
             let offset: u32 = PROCESS.len().try_into().unwrap();
-            println!("\n\n{} + {} + 1, previous: {} with len \n\n", orig, offset, REGISTERS[0]);
             REGISTERS[0] = orig + offset + 1;
             
             REGISTERS[rt] = savedrt;
