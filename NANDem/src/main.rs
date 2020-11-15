@@ -8,7 +8,7 @@ use u32;
 fn main() {
 
     let binary = load_binary();
-    println!("binary: {:?}", binary);
+    //println!("binary: {:?}", binary);
     emulate_program(binary);
     
 
@@ -46,11 +46,11 @@ fn emulate_program(binary: Vec<String>) {
                 reached_end = parse_instruction(PROCESS[REGISTERS[0] as usize].clone());
             }
             
-            println!("Reached end of process for {:?}", PROCESS);
+            //println!("Reached end of process for {:?}", PROCESS);
 
             if PROCESSTACK.len() != 0 {
                 PROCESS = PROCESSTACK.pop().unwrap();
-                println!("Returning to process {:?}", PROCESS);
+                //println!("Returning to process {:?}", PROCESS);
             }
 
         }
@@ -61,13 +61,13 @@ fn emulate_program(binary: Vec<String>) {
         
         let mut reached_end = false;
         unsafe {
-            println!();
-            println!("REGISTERS: {:?}", REGISTERS);
-            println!("STACK: {:?}", STACK);
-            println!("PROCESS: {:?}", PROCESS);
+          //  println!();
+          //  println!("REGISTERS: {:?}", REGISTERS);
+          //  println!("STACK: {:?}", STACK);
+           // println!("PROCESS: {:?}", PROCESS);
             //println!("PROCESSSTACK: {:?}", PROCESSTACK);
             //println!("REGISTRYSTACK: {:?}", REGISTRYSTACK);
-            println!("Current instruction: {}", instruction);
+            //println!("Current instruction: {}", instruction);
         }
 
         let op = &instruction[0..2];
@@ -157,7 +157,9 @@ fn emulate_program(binary: Vec<String>) {
             }
             "10" => {
                 let rs = usize::from_str_radix(&instruction[4..7], 2).unwrap();
-                unsafe { println!("{}", REGISTERS[rs] ) }
+                unsafe { 
+                    println!("{}", REGISTERS[rs] ) 
+                }
             }
             _ => panic!("Invalid instruction at {}!", instruction),
         };
@@ -216,7 +218,7 @@ fn emulate_program(binary: Vec<String>) {
 
             let orig: u32 = REGISTRYSTACK.pop().unwrap();
             let offset: u32 = PROCESS.len().try_into().unwrap();
-            println!("\n\n{} + {} + 1, previous: {} with len \n\n", orig, offset, REGISTERS[0]);
+            //println!("\n\n{} + {} + 1, previous: {} with len \n\n", orig, offset, REGISTERS[0]);
             REGISTERS[0] = orig + offset + 1;
             
             REGISTERS[rt] = savedrt;
