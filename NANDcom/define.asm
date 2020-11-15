@@ -64,7 +64,7 @@ NAND r2 rn
 END rs
 .end_define
 
-.define ADDER rt rs0 rs1 rs2    #-----------------------------------------------------------------------------------------
+.define add-1 rt rs0 rs1 rs2    #-----------------------------------------------------------------------------------------
 sys STACK PUSH rs2
 START rs0 rs1
 sys STACK POP r4
@@ -100,7 +100,7 @@ END rt
 sys STACK POP rs2
 .end_define
 
-.define 2-BIT-ADDER rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+.define add-2 rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
 sys STACK PUSH rs0
 sys STACK PUSH rs1
 sys STACK PUSH rs2
@@ -114,7 +114,7 @@ MOVE r4 r1
 BIT READ 0
 MOVE r1 r5
 
-ADDER r3 r0 r1 r2
+add-1 r3 r0 r1 r2
 
 MOVE r5 r3
 MOVE r4 rn
@@ -128,7 +128,7 @@ MOVE r0 r5
 MOVE r4 r1
 BIT READ 1
 MOVE r1 r5
-ADDER r3 r0 r1 r2
+add-1 r3 r0 r1 r2
 MOVE r5 r3
 MOVE r4 rn
 BIT WRITE 1
@@ -139,13 +139,13 @@ END rt
 sys STACK POP r2
 .end_define
 
-.define 4-BIT-ADDER rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+.define add-4 rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
 sys STACK PUSH rs2
 START rs0 rs1
 sys STACK POP r2 #carry
 
 
-2-BIT-ADDER r3 r0 r1 r2
+add-2 r3 r0 r1 r2
 
 
 MOVE r4 r3
@@ -175,7 +175,7 @@ BIT READ 3
 BIT WRITE 1
 MOVE r1 r4
 
-2-BIT-ADDER r3 r0 r1 r2
+add-2 r3 r0 r1 r2
 
 
 MOVE r4 r3
@@ -197,14 +197,14 @@ END rt
 sys STACK POP rs2
 .end_define
 
-.define 8-BIT-ADDER rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+.define add-8 rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
 
 sys STACK PUSH rs2
 START rs0 rs1
 sys STACK POP r2 #carry
 
 
-4-BIT-ADDER r3 r0 r1 r2
+add-4 r3 r0 r1 r2
 
 
 
@@ -255,7 +255,7 @@ BIT READ 7
 BIT WRITE 3
 MOVE r1 r4
 
-4-BIT-ADDER r3 r0 r1 r2
+add-4 r3 r0 r1 r2
 
 MOVE r4 r3
 BIT READ 0
@@ -285,14 +285,14 @@ END rt
 sys STACK POP rs2
 .end_define 
 
-.define 16-BIT-ADDER rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+.define add-16 rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
 
 sys STACK PUSH rs2
 START rs0 rs1
 sys STACK POP r2 #carry
 
 
-8-BIT-ADDER r3 r0 r1 r2
+add-8 r3 r0 r1 r2
 
 MOVE r4 r3
 BIT READ 0
@@ -380,7 +380,7 @@ BIT READ 15
 BIT WRITE 7
 MOVE r1 r4
 
-8-BIT-ADDER r3 r0 r1 r2
+add-8 r3 r0 r1 r2
 
 
 
@@ -438,14 +438,14 @@ END rt
 sys STACK POP rs2
 .end_define 
 
-.define 32-BIT-ADDER rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+.define add rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
 
 sys STACK PUSH rs2
 START rs0 rs1
 sys STACK POP r2 #carry
 
 
-16-BIT-ADDER r3 r0 r1 r2
+add-16 r3 r0 r1 r2
 
 MOVE r4 r3
 BIT READ 0
@@ -607,7 +607,7 @@ BIT READ 31
 BIT WRITE 15
 MOVE r1 r4
 
-16-BIT-ADDER r3 r0 r1 r2
+add-16 r3 r0 r1 r2
 
 MOVE r4 r3
 BIT READ 0
