@@ -1,5 +1,6 @@
 
 - [Description](#description)
+  - [Macros](#macros)
 - [Specifications](#specifications)
   - [Registers](#registers)
   - [Instructions](#instructions)
@@ -17,6 +18,7 @@
 # Description
 Groundbreaking NAND language based on the universal NAND gate.
 
+## Macros
 Compiler utilises define macros to build up an arsenal of functions from the one NAND instruction. 
 A macro is on the form
 ```
@@ -27,8 +29,21 @@ A macro is on the form
 .end_define
 ``` 
 and is then used like `xxx rs rt rd`. The compiler supports recursive .defines, and the sequencing of definitions doesn't matter. For example, here's a XOR macro:
-
-
+```
+.define XOR rs rt rd 
+START rt rd
+NAND rt rd
+sys STACK PUSH rn
+NAND rt rn
+sys STACK POP r2
+sys STACK PUSH rn
+NAND rd r2
+sys STACK POP r2
+NAND r2 rn
+END rs
+.end_define
+```
+the XOR can now be used as a regular instruction, for example `XOR r2 r0 r1` is equivalent to `r2 = r0 ^ r1`. XOR can also be used in other macros, and is in every way equivalent to a regular instruction (except for the space it takes up in the binary).
 
 # Specifications
 
