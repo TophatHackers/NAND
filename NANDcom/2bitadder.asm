@@ -1,5 +1,5 @@
 sys READ r0
 sys READ r1
-
-2-BIT-ADDER r0 r1 r2 r3
+#ADDER r3 r0 r1 r2
+4-BIT-ADDER r3 r0 r1 r2 
 sys WRITE r3
