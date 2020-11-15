@@ -112,8 +112,7 @@ fn emulate_program(binary: Vec<String>) {
         else {
             unsafe {
                 let mut binr4: Vec<char> = format!("{:0>32b}", REGISTERS[6]).chars().collect();
-                let r5bits = format!("{:0>32b}", REGISTERS[7]);
-                let r5bit = r5bits.chars().last().unwrap();
+                let r5bit = format!("{:0>32b}", REGISTERS[7]).chars().last().unwrap();
                 binr4[31-imm] = r5bit; // Big endian
                 let u32r4: String = binr4.into_iter().collect();
                 REGISTERS[6] = u32::from_str_radix(&u32r4, 2).unwrap();
