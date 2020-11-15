@@ -3,6 +3,22 @@ sys STACK PUSH rt
 sys STACK POP rs
 .end_define
 
+.define subtract rt rs0 rs1  #-----------------------------------------------------------------------------------------------------
+START rs0 rs1
+NOT r1 r1 r1
+
+NOT r2 r2 r2
+MOVE r4 r3
+MOVE r5 r2
+BIT WRITE 0
+MOVE r3 r4
+
+add r1 r1 r3
+
+add rn r0 r1
+END rt
+.end_define
+
 .define AND rs rt rd
 START rt rd
 NAND rt rd
@@ -704,4 +720,5 @@ MOVE rn r4
 
 END rt
 
-.end_define 
+.end_define
+
