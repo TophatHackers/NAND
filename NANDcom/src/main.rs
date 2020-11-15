@@ -26,20 +26,25 @@ fn run(paths:Paths){
     let file = fs::read_to_string(paths.filepath).expect("Failed to read input file");
     let file = file
         .split("\n")
-        .filter(|l| !l.is_empty())
+        .filter(|l| !(l.is_empty()))
         .map(|l| l.to_string())
         .collect::<Vec<String>>();
 
     let define_file =
         fs::read_to_string(paths.define_filepath).expect("Failed to read define file");
+        
+        
 
     let definitions = load_definition(&define_file);
+    //println!("{:?}",file);
 
+    
     let file = replace_macro(&file, &definitions);
 
     for line in &file {
         println!("{}",line);
     }
+    
 
     let bit_vector = compile(file);
 
@@ -224,6 +229,7 @@ fn replace_macro<'a>(
     for instruction in nand_file {
         let instruction=clear_comments(instruction);
         let split_instruction: Vec<&str> = instruction.split_whitespace().collect();
+        if instruction.is_empty(){continue;}
         if definitions.contains_key(split_instruction[0]) {
             let mut definition = definitions.get(split_instruction[0]).unwrap().clone();
             let number_of_args = definition[0].parse::<usize>().unwrap();

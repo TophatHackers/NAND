@@ -61,13 +61,13 @@ fn emulate_program(binary: Vec<String>) {
         
         let mut reached_end = false;
         unsafe {
-            println!();
-            println!("REGISTERS: {:?}", REGISTERS);
-            println!("STACK: {:?}", STACK);
-            println!("PROCESS: {:?}", PROCESS);
+            //println!();
+            //println!("REGISTERS: {:?}", REGISTERS);
+            //println!("STACK: {:?}", STACK);
+            //println!("PROCESS: {:?}", PROCESS);
             //println!("PROCESSSTACK: {:?}", PROCESSTACK);
             //println!("REGISTRYSTACK: {:?}", REGISTRYSTACK);
-            println!("Current instruction: {}", instruction);
+            //println!("Current instruction: {}", instruction);
         }
 
         let op = &instruction[0..2];
