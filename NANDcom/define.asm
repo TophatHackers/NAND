@@ -438,12 +438,9 @@ END rt
 sys STACK POP rs2
 .end_define 
 
-.define add rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+.define add rt rs0 rs1   #-----------------------------------------------------------------------------------------
 
-sys STACK PUSH rs2
-START rs0 rs1
-sys STACK POP r2 #carry
-
+START rs0 rs1 #carry
 
 add-16 r3 r0 r1 r2
 
@@ -705,8 +702,6 @@ MOVE r4 rn
 BIT WRITE 31
 MOVE rn r4
 
-sys STACK PUSH r2
-
 END rt
-sys STACK POP rs2
+
 .end_define 
