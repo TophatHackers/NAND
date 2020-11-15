@@ -17,7 +17,12 @@ fn main() {
         println!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
+    run(paths);
+}
 
+    
+
+fn run(paths:Paths){
     let file = fs::read_to_string(paths.filepath).expect("Failed to read input file");
     let file = file
         .split("\n")
@@ -216,72 +221,45 @@ fn replace_macro<'a>(
     let mut replaced_file = Vec::<String>::new();
     //println!("#######################");
 
-    for line in nand_file {
-        //println!("line :{}", line);
-        let split_line: Vec<&str> = line.split_whitespace().collect();
-        if definitions.contains_key(split_line[0]) {
-            let mut definition = definitions.get(split_line[0]).unwrap().clone();
-            println!("definition: {:?}", definition);
+    for instruction in nand_file {
+        let instruction=clear_comments(instruction);
+        let split_instruction: Vec<&str> = instruction.split_whitespace().collect();
+        if definitions.contains_key(split_instruction[0]) {
+            let mut definition = definitions.get(split_instruction[0]).unwrap().clone();
             let number_of_args = definition[0].parse::<usize>().unwrap();
             definition.remove(0);
-            //println!("macro:{}",split_line[0]);
 
-            //println!("{}:{}", split_line.len(), number_of_args);
-            //println!("split_line: {:?}", split_line);
-            if split_line.len() - 1 == number_of_args {
-                let mut replaced_lines = definition.clone();
-                let args_str = definition[0].clone();
-                let args: Vec<&str> = args_str.split_whitespace().collect();
-                definition.remove(0);
-                replaced_lines.remove(0);
+            if split_instruction.len() - 1 == number_of_args {
+                let mut replaced_instructions = definition.clone();
+                let args: Vec<&str> = definition[0].split_whitespace().collect();
+                replaced_instructions.remove(0);
                 
 
                 let mut counter = 0;
 
                 loop {
-                    //println!("{}",replaced_lines[counter]);
-                    /*if definitions.contains_key(replaced_lines[counter].split_whitespace().next().unwrap()){
-                        let macro_definition=replace_macro(&replaced_lines, definitions);
-
-                        replaced_lines.remove(counter);
-                        replaced_lines.splice(counter..counter, macro_definition);
-                    }*/
-                    
-                    // for i in 1..split_line.len() {
-
-                    //     let reg_to_replace = args[i-1];
-                    //     println!("before {}",temp_lines[counter]);
-                    //     println!("{}:{}",reg_to_replace,split_line[i]);
-                    //     temp_lines[counter] = replaced_lines[counter].replace(reg_to_replace, split_line[i]);
-                    //     println!(" after {}",temp_lines[counter]);
-
-                    // }
-
-                    //println!("replaced_lines: {:?}",replaced_lines);
-                   
-                    replaced_lines[counter]=replace(&args, &replaced_lines[counter], &split_line);
-
-                    if counter == replaced_lines.len() - 1 {
+                    replaced_instructions[counter]=replace(&args, &replaced_instructions[counter], &split_instruction);
+                    counter += 1;
+                    if counter == replaced_instructions.len(){
                         break;
                     }
-                    counter += 1;
+                    
                 }
-                for i in 0..replaced_lines.len() {
-                    replaced_file.push(replaced_lines[i].clone());
+                for i in 0..replaced_instructions.len() {
+                    replaced_file.push(replaced_instructions[i].clone());
                 }
             } else {
                 panic!(
                     "Cant call macro {} with {} args. Takes {} args",
-                    split_line[0],
-                    split_line.len() - 1,
+                    split_instruction[0],
+                    split_instruction.len() - 1,
                     number_of_args
                 );
             }
         } else {
-            replaced_file.push(line.clone());
+            replaced_file.push(instruction.clone());
         }
     }
-    //println!("{:?}", replaced_file);
     return replaced_file;
 }
 
@@ -296,27 +274,28 @@ fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
     let mut definition_name: String = String::new();
     let mut definitions: HashMap<String, Vec<String>> = HashMap::new();
 
-    for line in define_file {
-        let mut split_lines: Vec<&str> = line.split_whitespace().collect();
-        if split_lines[0] == ".end_define" {
+    for instruction in define_file {
+        let instruction=clear_comments(instruction);
+        let mut split_instructions: Vec<&str> = instruction.split_whitespace().collect();
+        if split_instructions[0] == ".end_define" {
             in_definition = false;
             definitions.insert(definition_name.clone(), definition.clone());
         } else if in_definition == true {
-            //definition = format!("{}\n{}", definition, line)
-            definition.push(line.to_string())
-        } else if split_lines[0] == ".define" {
+            //definition = format!("{}\n{}", definition, instruction)
+            definition.push(instruction.to_string())
+        } else if split_instructions[0] == ".define" {
             definition = Vec::new();
             definition_name = String::new();
 
             in_definition = true;
-            definition_name = split_lines[1].to_string();
-            let number_args = split_lines.len() - 2;
+            definition_name = split_instructions[1].to_string();
+            let number_args = split_instructions.len() - 2;
 
             definition.push(number_args.to_string());
-            split_lines.remove(0);
-            split_lines.remove(0);
+            split_instructions.remove(0);
+            split_instructions.remove(0);
 
-            definition.push(split_lines.join(" ").to_string());
+            definition.push(split_instructions.join(" ").to_string());
         }
     }
 
@@ -373,12 +352,12 @@ impl Paths {
     }
 }
 
-fn replace(args: &Vec<&str>, replaced: &String, split_line: &Vec<&str>) -> String{
+fn replace(args: &Vec<&str>, replaced: &String, split_instruction: &Vec<&str>) -> String{
     let mut repl_split: Vec<String> = replaced.split_whitespace().map(|s|s.to_string()).collect();
     for i in 0..repl_split.len() {
         for j in 0..args.len() { 
                 let reg_to_replace = args[j];
-                let tmp_str= repl_split[i].replace(reg_to_replace, split_line[j + 1]).clone();
+                let tmp_str= repl_split[i].replace(reg_to_replace, split_instruction[j + 1]).clone();
                 if tmp_str != repl_split[i]{
                     repl_split[i]=tmp_str;
                     break;
@@ -389,6 +368,11 @@ fn replace(args: &Vec<&str>, replaced: &String, split_line: &Vec<&str>) -> Strin
 
     return repl_split.join(" ").to_string();
 }
+
+fn clear_comments(instruction: &str)-> String{
+    return instruction.split("#").next().unwrap().to_string();
+}
+
 //for testing
 fn pause(){
     let mut input = String::new();
