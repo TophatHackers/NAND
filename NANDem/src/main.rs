@@ -8,7 +8,7 @@ use u32;
 fn main() {
 
     let binary = load_binary();
-    println!("binary: {:?}", binary);
+    //println!("binary: {:?}", binary);
     emulate_program(binary);
     
 
@@ -61,10 +61,17 @@ fn emulate_program(binary: Vec<String>) {
         
         let mut reached_end = false;
         unsafe {
+<<<<<<< HEAD
             //println!();
             //println!("REGISTERS: {:?}", REGISTERS);
             //println!("STACK: {:?}", STACK);
             //println!("PROCESS: {:?}", PROCESS);
+=======
+          //  println!();
+          //  println!("REGISTERS: {:?}", REGISTERS);
+          //  println!("STACK: {:?}", STACK);
+           // println!("PROCESS: {:?}", PROCESS);
+>>>>>>> 1ba1d4d93df9cbdc3d71dc133b68d69318325f9a
             //println!("PROCESSSTACK: {:?}", PROCESSTACK);
             //println!("REGISTRYSTACK: {:?}", REGISTRYSTACK);
             //println!("Current instruction: {}", instruction);
@@ -157,7 +164,9 @@ fn emulate_program(binary: Vec<String>) {
             }
             "10" => {
                 let rs = usize::from_str_radix(&instruction[4..7], 2).unwrap();
-                unsafe { println!("{}", REGISTERS[rs] ) }
+                unsafe { 
+                    println!("{}", REGISTERS[rs] ) 
+                }
             }
             _ => panic!("Invalid instruction at {}!", instruction),
         };
@@ -224,6 +233,10 @@ fn emulate_program(binary: Vec<String>) {
 
             let orig: u32 = REGISTRYSTACK.pop().unwrap();
             let offset: u32 = PROCESS.len().try_into().unwrap();
+<<<<<<< HEAD
+=======
+            //println!("\n\n{} + {} + 1, previous: {} with len \n\n", orig, offset, REGISTERS[0]);
+>>>>>>> 1ba1d4d93df9cbdc3d71dc133b68d69318325f9a
             REGISTERS[0] = orig + offset + 1;
             
             REGISTERS[rt] = savedrt;

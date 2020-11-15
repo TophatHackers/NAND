@@ -5,16 +5,15 @@ use std::env;
 use std::io::prelude::*;
 use std::process;
 
-struct Paths{
+struct Paths {
     filepath: String,
     define_filepath: String,
-    output_filepath: String
+    output_filepath: String,
 }
 
 fn main() {
-
     let args: Vec<String> = env::args().collect();
-    let paths= Paths::new(&args).unwrap_or_else(|err|{
+    let paths = Paths::new(&args).unwrap_or_else(|err| {
         println!("Problem parsing arguments: {}", err);
         process::exit(1);
     });
@@ -22,16 +21,18 @@ fn main() {
     let file = fs::read_to_string(paths.filepath).expect("Failed to read input file");
     let file = file
         .split("\n")
-        .filter(|l| !l.is_empty()).map(|l|l.to_string())
+        .filter(|l| !l.is_empty())
+        .map(|l| l.to_string())
         .collect::<Vec<String>>();
 
-    let define_file = fs::read_to_string(paths.define_filepath).expect("Failed to read define file");
-    
+    let define_file =
+        fs::read_to_string(paths.define_filepath).expect("Failed to read define file");
+
     let definitions = load_definition(&define_file);
 
     let file = replace_macro(&file, &definitions);
 
-    for line in &file{
+    for line in &file {
         println!("{}",line);
     }
 
@@ -153,23 +154,21 @@ fn compile(file: Vec<String>) -> Vec<u8> {
                     }
                 }
             }
-            "BIT" =>{
-                set_bits(&mut bv, 7, vec![1,1]);
-                match split_line[1]{
-                    "READ"=>{
-                        set_bits(&mut bv, 5, vec![0])
-                    },
-                    "WRITE" =>{
-                        set_bits(&mut bv, 5, vec![1])
-                    },
+            "BIT" => {
+                set_bits(&mut bv, 7, vec![1, 1]);
+                match split_line[1] {
+                    "READ" => set_bits(&mut bv, 5, vec![0]),
+                    "WRITE" => set_bits(&mut bv, 5, vec![1]),
                     _ => {
-                        panic!("BIT has no such command {}",split_line[1]);
+                        panic!("BIT has no such command {}", split_line[1]);
                     }
                 }
 
-                let imm=format!("{:0>5b}",split_line[2].parse::<u8>().unwrap()).chars().map(|c| c.to_digit(2).unwrap() as u8).collect::<Vec<u8>>();
+                let imm = format!("{:0>5b}", split_line[2].parse::<u8>().unwrap())
+                    .chars()
+                    .map(|c| c.to_digit(2).unwrap() as u8)
+                    .collect::<Vec<u8>>();
                 set_bits(&mut bv, 4, imm);
-
             }
             _ => println!("unknown command {}", split_line[0]),
         }
@@ -177,9 +176,9 @@ fn compile(file: Vec<String>) -> Vec<u8> {
         let base: u8 = 2;
         for (i, b) in bv.iter().enumerate() {
             number += base.pow((7 - i) as u32) * b;
-         
+            //print!("{}",b);
         }
-        
+        //println!();
         bvVector.push(number);
     }
 
@@ -215,47 +214,68 @@ fn replace_macro<'a>(
     definitions: &'a HashMap<String, Vec<String>>,
 ) -> Vec<String> {
     let mut replaced_file = Vec::<String>::new();
+    //println!("#######################");
 
     for line in nand_file {
+        //println!("line :{}", line);
         let split_line: Vec<&str> = line.split_whitespace().collect();
         if definitions.contains_key(split_line[0]) {
-            let  mut definition = definitions.get(split_line[0]).unwrap().clone();
+            let mut definition = definitions.get(split_line[0]).unwrap().clone();
+            println!("definition: {:?}", definition);
             let number_of_args = definition[0].parse::<usize>().unwrap();
             definition.remove(0);
-           
+            //println!("macro:{}",split_line[0]);
 
+            //println!("{}:{}", split_line.len(), number_of_args);
+            //println!("split_line: {:?}", split_line);
             if split_line.len() - 1 == number_of_args {
                 let mut replaced_lines = definition.clone();
-                let args_str=definition[0].clone();
+                let args_str = definition[0].clone();
                 let args: Vec<&str> = args_str.split_whitespace().collect();
                 definition.remove(0);
                 replaced_lines.remove(0);
                 
-                let mut counter=0;
-                loop{
+
+                let mut counter = 0;
+
+                loop {
                     //println!("{}",replaced_lines[counter]);
-                    if definitions.contains_key(replaced_lines[counter].split_whitespace().next().unwrap()){
+                    /*if definitions.contains_key(replaced_lines[counter].split_whitespace().next().unwrap()){
                         let macro_definition=replace_macro(&replaced_lines, definitions);
-                        
+
                         replaced_lines.remove(counter);
                         replaced_lines.splice(counter..counter, macro_definition);
-                    }
+                    }*/
+                    
+                    // for i in 1..split_line.len() {
 
-                    for i in 1..split_line.len() {
-                        let reg_to_replace = args[i-1];
-                        replaced_lines[counter] = replaced_lines[counter].replace(reg_to_replace, split_line[i]);
-                        
-                    }
+                    //     let reg_to_replace = args[i-1];
+                    //     println!("before {}",temp_lines[counter]);
+                    //     println!("{}:{}",reg_to_replace,split_line[i]);
+                    //     temp_lines[counter] = replaced_lines[counter].replace(reg_to_replace, split_line[i]);
+                    //     println!(" after {}",temp_lines[counter]);
 
-                    if counter==replaced_lines.len()-1{
+                    // }
+
+                    //println!("replaced_lines: {:?}",replaced_lines);
+                   
+                    replaced_lines[counter]=replace(&args, &replaced_lines[counter], &split_line);
+
+                    if counter == replaced_lines.len() - 1 {
                         break;
                     }
-                    counter+=1;
+                    counter += 1;
                 }
-                
                 for i in 0..replaced_lines.len() {
                     replaced_file.push(replaced_lines[i].clone());
                 }
+            } else {
+                panic!(
+                    "Cant call macro {} with {} args. Takes {} args",
+                    split_line[0],
+                    split_line.len() - 1,
+                    number_of_args
+                );
             }
         } else {
             replaced_file.push(line.clone());
@@ -266,15 +286,13 @@ fn replace_macro<'a>(
 }
 
 fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
-
     let define_file = define_file
-    .split("\n")
-    .filter(|l| !l.is_empty())
-    .collect::<Vec<&str>>();
-
+        .split("\n")
+        .filter(|l| !l.is_empty())
+        .collect::<Vec<&str>>();
 
     let mut in_definition = false;
-    let mut definition: Vec<String>=vec![];
+    let mut definition: Vec<String> = vec![];
     let mut definition_name: String = String::new();
     let mut definitions: HashMap<String, Vec<String>> = HashMap::new();
 
@@ -283,12 +301,10 @@ fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
         if split_lines[0] == ".end_define" {
             in_definition = false;
             definitions.insert(definition_name.clone(), definition.clone());
-
         } else if in_definition == true {
             //definition = format!("{}\n{}", definition, line)
             definition.push(line.to_string())
         } else if split_lines[0] == ".define" {
-
             definition = Vec::new();
             definition_name = String::new();
 
@@ -300,38 +316,34 @@ fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
             split_lines.remove(0);
             split_lines.remove(0);
 
-            
             definition.push(split_lines.join(" ").to_string());
-            
-
         }
     }
 
-    
-    // let mut found_macro=true;
-    // while found_macro {
-    //     found_macro=false;
-    //     let temp_def= definitions.clone();
-    //     for def in &mut definitions{
-    //         let new_def=replace_macro(&def.1, &temp_def);
-    //         if &new_def!=def.1 {
-    //             *def.1=new_def;
-    //             found_macro=true;
-    //         }
-    //     }
+    let mut found_macro = true;
+    while found_macro {
+        found_macro = false;
+        let temp_def = definitions.clone();
+        for def in &mut definitions {
+            let new_def = replace_macro(&def.1, &temp_def);
+            //println!("def : {:?}", &def.1);
+            //println!("new_def; {:?}", new_def);
+            if &new_def != def.1 {
+                *def.1 = new_def;
+                found_macro = true;
+            }
+        }
+    }
 
-    // }
-    
-        println!("{:?}",definitions);
     return definitions;
 }
 
-impl Paths{
-    fn new(args: &[String])-> Result<Paths,String>{
+impl Paths {
+    fn new(args: &[String]) -> Result<Paths, String> {
         let mut filepath: String = String::from("AND.asm");
         let mut output_filepath: String = String::from("a.nand");
-        let mut define_filepath: String = String::from( "define.asm");
-    
+        let mut define_filepath: String = String::from("define.asm");
+
         if args.len() > 1 {
             for (i, arg) in args.iter().enumerate() {
                 if arg.chars().next().unwrap() == '-' {
@@ -345,14 +357,40 @@ impl Paths{
                         _ => return Err(String::from("No such flag")),
                     }
                 } else {
-                    if arg==&output_filepath{
+                    if arg == &output_filepath {
                         continue;
                     }
                     filepath = arg.clone();
                 }
             }
         }
-    
-        return Ok(Paths{filepath, define_filepath,output_filepath});
+
+        return Ok(Paths {
+            filepath,
+            define_filepath,
+            output_filepath,
+        });
     }
+}
+
+fn replace(args: &Vec<&str>, replaced: &String, split_line: &Vec<&str>) -> String{
+    let mut repl_split: Vec<String> = replaced.split_whitespace().map(|s|s.to_string()).collect();
+    for i in 0..repl_split.len() {
+        for j in 0..args.len() { 
+                let reg_to_replace = args[j];
+                let tmp_str= repl_split[i].replace(reg_to_replace, split_line[j + 1]).clone();
+                if tmp_str != repl_split[i]{
+                    repl_split[i]=tmp_str;
+                    break;
+                }
+                      
+        }
+    }
+
+    return repl_split.join(" ").to_string();
+}
+//for testing
+fn pause(){
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input);
 }

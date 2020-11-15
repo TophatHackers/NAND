@@ -1,6 +1,6 @@
 .define MOVE rs rt
 START rs rt
-AND rt rt rn
+AND rt rt
 END rs
 .end_define
 
