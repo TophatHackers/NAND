@@ -3,65 +3,65 @@ sys STACK PUSH rt
 sys STACK POP rs
 .end_define
 
-.define AND rt r0 r1
-START r0 r1
-NAND r0 r1
+.define AND rs rt rd
+START rt rd
+NAND rt rd
 NAND rn rn
-END rt
+END rs
 .end_define
 
-.define OR rt r0 r1
-START r0 r1 
-NAND r0 r0
+.define OR rs rt rd
+START rt rd 
+NAND rt rt
 sys STACK PUSH rn
-NAND r1 r1
+NAND rd rd
 sys STACK POP r2
 NAND rn r2
-END rt
+END rs
 .end_define
 
-.define NOR rt r0 r1 
-START r0 r1
-NAND r0 r0
+.define NOR rs rt rd 
+START rt rd
+NAND rt rt
 STACK PUSH rn
-NAND r1 r1 
+NAND rd rd 
 sys STACK POP r2
 NAND rn r2
 NAND rn rn
-END rt
+END rs
 .end_define
 
-.define XOR rt r0 r1 
-START r0 r1
-NAND r0 r1
+.define XOR rs rt rd 
+START rt rd
+NAND rt rd
 sys STACK PUSH rn
-NAND r0 rn
+NAND rt rn
 sys STACK POP r2
 sys STACK PUSH rn
-NAND r1 r2
+NAND rd r2
 sys STACK POP r2
 NAND r2 rn
-END rt
+END rs
 .end_define
 
-.define NOT rt r0 r1 
-START r0 r1
-NAND r0 r0
-END rt
+.define NOT rs rt rd
+START rt rd
+NAND rt rt
+END rs
 .end_define
 
-.define XNOR rt r0 r1 
-START r0 r1 
-NAND r0 r0
+.define XNOR rs rt rd 
+START rt rd 
+NAND rt rt
 sys STACK PUSH rn
-NAND r1 r1
+NAND rd rd
 sys STACK POP r2
 NAND r2 rn
 sys STACK PUSH rn
-NAND r1 r0 
+NAND rd rt 
 sys STACK POP r2
 NAND r2 rn
-END rt
+END rs
 .end_define
 
 .define ADDER rt rs0 rs1 rs2
