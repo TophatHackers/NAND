@@ -1,8 +1,6 @@
 .define MOVE rs rt
-START rs rt
 sys STACK PUSH rt
-sys STACK POP rn
-END rs
+sys STACK POP rs
 .end_define
 
 .define AND r0 r1 rt
