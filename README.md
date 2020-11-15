@@ -78,6 +78,32 @@ NANDS the first register with the second and saves it in rn.
 
 ### LOOP
 
+Loop is in reality 2 operations, START and END. They are differentiated by the last 3 bits, if they're all 0 then the operation is identified as END otherwise as START. Be wary of the bug if you try to pass PC as the 2nd argument in START (since PC = 000), this will result in unintended behaviour!
+
+#### START
+
+| **Encoding** | **Description**                    |
+| :----------- | :--------------------------------- |
+| `op<7:6>`    | Identifies LOOP instruction        |
+| `rs<5:3>`    | Register to use as first argument  |
+| `rt<2:0>`    | Register to use as second argument |
+
+#### END
+
+| **Encoding** | **Description**                                               |
+| :----------- | :------------------------------------------------------------ |
+| `op<7:6>`    | Identifies LOOP instruction                                   |
+| `rs<5:3>`    | Register to use as return value                               |
+| `id<2:0>`    | Padding/Identifier, all being 0 differentiates END from START |
+
+### BIT
+
+| **Encoding** | **Description**                                     |
+| :----------- | :-------------------------------------------------- |
+| `op<7:6>`    | Identifies BIT instruction                          |
+| `type<5>`    | Identifies type of BIT operation, READ or WRITE     |
+| `imm<4:0>`   | Immediate that signifies index of bit to READ/WRITE |
+
 
 
 
