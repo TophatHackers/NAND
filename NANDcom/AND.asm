@@ -1,7 +1,6 @@
 sys READ r0
 sys READ r1
 
-AND r3 r4 r5
-AND r0 r1 r2       #hej på dig
+MOVE r2 r0    #hej på dig
 
 sys WRITE r2
