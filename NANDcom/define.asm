@@ -8,7 +8,7 @@ sys STACK POP rs
 #|----------| rt = 1
 .define load1 rt
 START r0 r1
-NOT r2 r2 r2
+NOT r2 r2 
 MOVE r4 rn
 MOVE r5 r2
 BIT WRITE 0
@@ -19,9 +19,9 @@ END rt
 #|----------| rt = rs0 - rs1
 .define subtract rt rs0 rs1  
 START rs0 rs1
-NOT r1 r1 r1
+NOT r1 r1
 
-NOT r2 r2 r2
+NOT r2 r2 
 MOVE r4 r3
 MOVE r5 r2
 BIT WRITE 0
@@ -767,7 +767,7 @@ sys STACK POP rs2
 
 START rs0 rs1
 
-NOT r1 r1 r1  # 1's complement of r1
+NOT r1 r1  # 1's complement of r1
 load1 r2      # Carry in = 1
 add-carry r3 r0 r1 r2
 

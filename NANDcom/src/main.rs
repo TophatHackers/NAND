@@ -24,12 +24,13 @@ fn main() {
 
 fn run(paths:Paths){
     let file = fs::read_to_string(paths.filepath).expect("Failed to read input file");
+    
     let file = file
         .split("\n")
-        .filter(|l| !(l.is_empty()))
+        .filter(|l| !(l.is_empty())).filter(|l| !(l.trim().chars().next().unwrap()=='#'))
         .map(|l| clear_comments(l))
         .collect::<Vec<String>>();
-
+        println!("before {:?}",file);
     let define_file =
         fs::read_to_string(paths.define_filepath).expect("Failed to read define file");
         
@@ -270,11 +271,12 @@ fn replace_macro<'a>(
 }
 
 fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
+    println!("bef {:?}",define_file[0..10].to_string());
     let define_file = define_file
         .split("\n")
-        .filter(|l| !l.is_empty())
+        .filter(|l| !(l.is_empty())).filter(|l| !(l.trim().chars().next().unwrap()=='#'))
         .collect::<Vec<&str>>();
-
+    println!("bef {:?}",define_file);
     let mut in_definition = false;
     let mut definition: Vec<String> = vec![];
     let mut definition_name: String = String::new();
