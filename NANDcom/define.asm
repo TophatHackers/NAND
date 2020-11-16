@@ -3,6 +3,19 @@ sys STACK PUSH rt
 sys STACK POP rs
 .end_define
 
+.define load1 rt
+
+START r0 r1
+
+NOT r2 r2 r2
+MOVE r4 rn
+MOVE r5 r2
+BIT WRITE 0
+MOVE rn r4
+
+END rt
+.end_define
+
 .define subtract rt rs0 rs1  #-----------------------------------------------------------------------------------------------------
 START rs0 rs1
 NOT r1 r1 r1
@@ -722,3 +735,285 @@ END rt
 
 .end_define
 
+.define add-carry rt rs0 rs1 rs2  #-----------------------------------------------------------------------------------------
+sys STACK PUSH rs2
+START rs0 rs1 #carry
+sys STACK POP r2
+add-16 r3 r0 r1 r2
+
+MOVE r4 r3
+BIT READ 0
+MOVE r4 rn
+BIT WRITE 0
+MOVE rn r4
+MOVE r4 r3
+BIT READ 1
+MOVE r4 rn
+BIT WRITE 1
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 2
+MOVE r4 rn
+BIT WRITE 2
+MOVE rn r4
+MOVE r4 r3
+BIT READ 3
+MOVE r4 rn
+BIT WRITE 3
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 4
+MOVE r4 rn
+BIT WRITE 4
+MOVE rn r4
+MOVE r4 r3
+BIT READ 5
+MOVE r4 rn
+BIT WRITE 5
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 6
+MOVE r4 rn
+BIT WRITE 6
+MOVE rn r4
+MOVE r4 r3
+BIT READ 7
+MOVE r4 rn
+BIT WRITE 7
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 8
+MOVE r4 rn
+BIT WRITE 8
+MOVE rn r4
+MOVE r4 r3
+BIT READ 9
+MOVE r4 rn
+BIT WRITE 9
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 10
+MOVE r4 rn
+BIT WRITE 10
+MOVE rn r4
+MOVE r4 r3
+BIT READ 11
+MOVE r4 rn
+BIT WRITE 11
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 12
+MOVE r4 rn
+BIT WRITE 12
+MOVE rn r4
+MOVE r4 r3
+BIT READ 13
+MOVE r4 rn
+BIT WRITE 13
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 14
+MOVE r4 rn
+BIT WRITE 14
+MOVE rn r4
+MOVE r4 r3
+BIT READ 15
+MOVE r4 rn
+BIT WRITE 15
+MOVE rn r4
+
+MOVE r4 r0  #moving second 8 bits to first
+BIT READ 16  
+BIT WRITE 0
+BIT READ 17
+BIT WRITE 1
+BIT READ 18  
+BIT WRITE 2
+BIT READ 19
+BIT WRITE 3
+BIT READ 20 
+BIT WRITE 4
+BIT READ 21
+BIT WRITE 5
+BIT READ 22  
+BIT WRITE 6
+BIT READ 23
+BIT WRITE 7
+BIT READ 24  
+BIT WRITE 8
+BIT READ 25
+BIT WRITE 9
+BIT READ 26  
+BIT WRITE 10
+BIT READ 27
+BIT WRITE 11
+BIT READ 28 
+BIT WRITE 12
+BIT READ 29
+BIT WRITE 13
+BIT READ 30  
+BIT WRITE 14
+BIT READ 31
+BIT WRITE 15
+MOVE r0 r4
+
+
+
+MOVE r4 r1
+BIT READ 16  
+BIT WRITE 0
+BIT READ 17
+BIT WRITE 1
+BIT READ 18  
+BIT WRITE 2
+BIT READ 19
+BIT WRITE 3
+BIT READ 20 
+BIT WRITE 4
+BIT READ 21
+BIT WRITE 5
+BIT READ 22  
+BIT WRITE 6
+BIT READ 23
+BIT WRITE 7
+BIT READ 24  
+BIT WRITE 8
+BIT READ 25
+BIT WRITE 9
+BIT READ 26  
+BIT WRITE 10
+BIT READ 27
+BIT WRITE 11
+BIT READ 28 
+BIT WRITE 12
+BIT READ 29
+BIT WRITE 13
+BIT READ 30  
+BIT WRITE 14
+BIT READ 31
+BIT WRITE 15
+MOVE r1 r4
+
+add-16 r3 r0 r1 r2
+
+MOVE r4 r3
+BIT READ 0
+MOVE r4 rn
+BIT WRITE 16
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 1
+MOVE r4 rn
+BIT WRITE 17
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 2
+MOVE r4 rn
+BIT WRITE 18
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 3
+MOVE r4 rn
+BIT WRITE 19
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 4
+MOVE r4 rn
+BIT WRITE 20
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 5
+MOVE r4 rn
+BIT WRITE 21
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 6
+MOVE r4 rn
+BIT WRITE 22
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 7
+MOVE r4 rn
+BIT WRITE 23
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 8
+MOVE r4 rn
+BIT WRITE 24
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 9
+MOVE r4 rn
+BIT WRITE 25
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 10
+MOVE r4 rn
+BIT WRITE 26
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 11
+MOVE r4 rn
+BIT WRITE 27
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 12
+MOVE r4 rn
+BIT WRITE 28
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 13
+MOVE r4 rn
+BIT WRITE 29
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 14
+MOVE r4 rn
+BIT WRITE 30
+MOVE rn r4
+
+MOVE r4 r3
+BIT READ 15
+MOVE r4 rn
+BIT WRITE 31
+MOVE rn r4
+
+sys STACK PUSH r2
+END rt
+sys STACK POP rs2
+.end_define
+
+
+.define comparator rt rs0 rs1 #---------------------------------------------------------------------------------------------------
+
+START rs0 rs1
+
+NOT r1 r1 r1  # 1's complement of r1
+load1 r2      # Carry in = 1
+add-carry r3 r0 r1 r2
+
+sys WRITE r3
+sys WRITE r2
+END rt
+.end_define
