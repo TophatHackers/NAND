@@ -775,3 +775,21 @@ sys STACK PUSH r2
 END rt
 sys STACK POP rd
 .end_define
+
+#|------------| rt = (rs < rd)
+.define IsLessThan rt rs rd
+
+START rs rd
+comparator r2 r3 r0 r1
+NOT r3 r3
+MOVE rn r3
+END rt
+
+.end_define
+
+
+
+
+#|-------| rt = (rs == rd)
+
+
