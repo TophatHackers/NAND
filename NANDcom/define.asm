@@ -80,8 +80,8 @@ END rs
 
 #|----------| rs = !rt
 .define NOT rs rt
-START rt rd
-NAND rt rt
+START rt rt
+NAND r0 r0
 END rs
 .end_define
 
@@ -782,12 +782,66 @@ sys STACK POP rd
 START rs rd
 comparator r2 r3 r0 r1
 NOT r3 r3
+MOVE r4 r3
+BIT READ 0
+MOVE r3 r5
 MOVE rn r3
 END rt
 
 .end_define
 
 
+#|--------| rs = rd if rt == 0 else rs = rf
+.define MUX rs rt rd rf
+sys STACK PUSH rt
+START rd rf
+sys STACK POP r2
+# r0 = A, r1 = B, r2 = selector
+
+MOVE r5 r2
+MOVE r4 r2
+
+BIT WRITE 0
+BIT WRITE 1
+BIT WRITE 2
+BIT WRITE 3
+BIT WRITE 4
+BIT WRITE 5
+BIT WRITE 6
+BIT WRITE 7
+BIT WRITE 8
+BIT WRITE 9
+BIT WRITE 10
+BIT WRITE 11
+BIT WRITE 12
+BIT WRITE 13
+BIT WRITE 14
+BIT WRITE 15
+BIT WRITE 16
+BIT WRITE 17
+BIT WRITE 18
+BIT WRITE 19
+BIT WRITE 20
+BIT WRITE 21
+BIT WRITE 22
+BIT WRITE 23
+BIT WRITE 24
+BIT WRITE 25
+BIT WRITE 26
+BIT WRITE 27
+BIT WRITE 28
+BIT WRITE 29
+BIT WRITE 30
+BIT WRITE 31
+
+MOVE r2 r4
+NAND r2 r2 # S & S
+NAND r0 rn # A & (S & S)
+MOVE r3 rn # r3 = A & (S & S)
+NAND r1 r2 # B & S
+NAND r3 rn # (A & (S & S)) & (B & S)
+END rs
+.end_define
 
 
 #|-------| rt = (rs == rd)
