@@ -27,7 +27,7 @@ fn run(paths:Paths){
     let file = file
         .split("\n")
         .filter(|l| !(l.is_empty()))
-        .map(|l| l.to_string())
+        .map(|l| clear_comments(l))
         .collect::<Vec<String>>();
 
     let define_file =
@@ -283,6 +283,7 @@ fn load_definition(define_file: &String) -> HashMap<String, Vec<String>> {
     for instruction in define_file {
         let instruction=clear_comments(instruction);
         let mut split_instructions: Vec<&str> = instruction.split_whitespace().collect();
+        println!("{}",instruction);
         if split_instructions[0] == ".end_define" {
             in_definition = false;
             definitions.insert(definition_name.clone(), definition.clone());
