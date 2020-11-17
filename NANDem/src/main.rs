@@ -61,13 +61,14 @@ fn emulate_program(binary: Vec<String>) {
         
         let mut reached_end = false;
         unsafe {
-            //println!();
-            //println!("REGISTERS: {:?}", REGISTERS);
-            //println!("STACK: {:?}", STACK);
+            //(println!();
+            //(println!("REGISTERS: {:?}", REGISTERS);
+            //(println!("STACK: {:?}", STACK);
             //println!("PROCESS: {:?}", PROCESS);
             //println!("PROCESSSTACK: {:?}", PROCESSTACK);
             //println!("REGISTRYSTACK: {:?}", REGISTRYSTACK);
             //println!("Current instruction: {}", instruction);
+            //println!("len of bin {}", PROCESS.len());
         }
 
         let op = &instruction[0..2];
@@ -141,9 +142,9 @@ fn emulate_program(binary: Vec<String>) {
         let id = &instruction[2..4];
         match id {
             "00" => {
-                let STACKtype = &instruction[4..5];
+                let stacktype = &instruction[4..5];
                 let rs = usize::from_str_radix(&instruction[5..8], 2).unwrap();
-                if STACKtype == "0" {
+                if stacktype == "0" {
                     unsafe { STACK.push(REGISTERS[rs]) }
                 }
                 else {

@@ -855,6 +855,7 @@ BIT WRITE 30
 BIT WRITE 31
 
 MOVE r2 r4
+
 NAND r2 r2 # S & S
 NAND r0 rn # A & (S & S)
 MOVE r3 rn # r3 = A & (S & S)
@@ -863,7 +864,51 @@ NAND r3 rn # (A & (S & S)) & (B & S)
 END rs
 .end_define
 
+.define multiplyLSB rd # rd = rd[0]*32 ------------------------------------------
 
+START rd rd
+
+MOVE r5 r0
+MOVE r4 r0
+
+
+BIT WRITE 0
+BIT WRITE 1
+BIT WRITE 2
+BIT WRITE 3
+BIT WRITE 4
+BIT WRITE 5
+BIT WRITE 6
+BIT WRITE 7
+BIT WRITE 8
+BIT WRITE 9
+BIT WRITE 10
+BIT WRITE 11
+BIT WRITE 12
+BIT WRITE 13
+BIT WRITE 14
+BIT WRITE 15
+BIT WRITE 16
+BIT WRITE 17
+BIT WRITE 18
+BIT WRITE 19
+BIT WRITE 20
+BIT WRITE 21
+BIT WRITE 22
+BIT WRITE 23
+BIT WRITE 24
+BIT WRITE 25
+BIT WRITE 26
+BIT WRITE 27
+BIT WRITE 28
+BIT WRITE 29
+BIT WRITE 30
+BIT WRITE 31
+
+MOVE rn r4
+END rd
+
+.end_define
 
 
 # rt= rs0[0] | rs0[1] | ... | rs0[31] -----------------------------------------------------------------------
@@ -1072,4 +1117,8 @@ BIT WRITE 0
 MOVE rn r4
 
 END rt
+.end_define
+
+.define EOF rd
+NAND rn rn
 .end_define
