@@ -1,11 +1,11 @@
 
-#|----------| rs = rt
+#|----------| rs = rt -----------------------------------------------------------------------
 .define MOVE rs rt 
 sys STACK PUSH rt
 sys STACK POP rs
 .end_define
 
-#|----------| rt = 1
+#|----------| rt = 1 -----------------------------------------------------------------------
 .define load1 rt
 START r0 r1
 NOT r2 r2 
@@ -16,7 +16,7 @@ MOVE rn r4
 END rt
 .end_define
 
-#|----------| rt = rs0 - rs1
+#|----------| rt = rs0 - rs1 -----------------------------------------------------------------------
 .define subtract rt rs0 rs1  
 START rs0 rs1
 NOT r1 r1
@@ -33,74 +33,74 @@ add rn r0 r1
 END rt
 .end_define
 
-#|----------| rs = rt & rd
+#|----------| rs = rt & rd -----------------------------------------------------------------------
 .define AND rs rt rd
 START rt rd
-NAND rt rd
+NAND r0 r1
 NAND rn rn
 END rs
 .end_define
 
-#|----------| rs = rt | rd
+#|----------| rs = rt | rd -----------------------------------------------------------------------
 .define OR rs rt rd
 START rt rd 
-NAND rt rt
+NAND r0 r0
 sys STACK PUSH rn
-NAND rd rd
+NAND r1 r1
 sys STACK POP r2
 NAND rn r2
 END rs
 .end_define
 
-#|----------| rs = !(rt | rd)
+#|----------| rs = !(rt | rd) -----------------------------------------------------------------------
 .define NOR rs rt rd 
 START rt rd
-NAND rt rt
+NAND r0 r0
 STACK PUSH rn
-NAND rd rd 
+NAND r1 r1 
 sys STACK POP r2
 NAND rn r2
 NAND rn rn
 END rs
 .end_define
 
-#|----------| rs = rt ^ rd
+#|----------| rs = rt ^ rd -----------------------------------------------------------------------
 .define XOR rs rt rd 
 START rt rd
-NAND rt rd
+NAND r0 r1
 sys STACK PUSH rn
-NAND rt rn
+NAND r0 rn
 sys STACK POP r2
 sys STACK PUSH rn
-NAND rd r2
+NAND r1 r2
 sys STACK POP r2
 NAND r2 rn
 END rs
 .end_define
 
-#|----------| rs = !rt
+#|----------| rs = !rt -----------------------------------------------------------------------
 .define NOT rs rt
 START rt rt
 NAND r0 r0
 END rs
 .end_define
 
-#|----------| rs = rt XNOR rd
+#|----------| rs = rt XNOR rd -----------------------------------------------------------------------
 .define XNOR rs rt rd 
 START rt rd 
-NAND rt rt
+NAND r0 r0
 sys STACK PUSH rn
-NAND rd rd
+NAND r1 r1
 sys STACK POP r2
 NAND r2 rn
 sys STACK PUSH rn
-NAND rd rt 
+NAND r1 r0 
 sys STACK POP r2
 NAND r2 rn
 END rs
 .end_define
 
-#|----------| rt[0] = rs0[0] + rs1[0], rs2 = carryout
+#|----------| rt[0] = rs0[0] + rs1[0], rs2 = carryout -----------------------------------------------------------------------
 .define add-1 rt rs0 rs1 rs2  
 sys STACK PUSH rs2
 START rs0 rs1
@@ -137,7 +137,7 @@ END rt
 sys STACK POP rs2
 .end_define
 
-#|----------| rt[1:0] = rs0[1:0] + rs1[1:0], rs2 = carryout
+#|----------| rt[1:0] = rs0[1:0] + rs1[1:0], rs2 = carryout -----------------------------------------------------------------------
 .define add-2 rt rs0 rs1 rs2 
 sys STACK PUSH rs0
 sys STACK PUSH rs1
@@ -177,7 +177,7 @@ END rt
 sys STACK POP r2
 .end_define
 
-#|----------| rt[3:0] = rs0[3:0] + rs1[3:0], rs2 = carryout
+#|----------| rt[3:0] = rs0[3:0] + rs1[3:0], rs2 = carryout -----------------------------------------------------------------------
 .define add-4 rt rs0 rs1 rs2
 sys STACK PUSH rs2
 START rs0 rs1
@@ -236,7 +236,7 @@ END rt
 sys STACK POP rs2
 .end_define
 
-#|----------| rt[7:0] = rs0[7:0] + rs1[7:0], rs2 = carryout
+#|----------| rt[7:0] = rs0[7:0] + rs1[7:0], rs2 = carryout -----------------------------------------------------------------------
 .define add-8 rt rs0 rs1 rs2 
 
 sys STACK PUSH rs2
@@ -325,7 +325,7 @@ END rt
 sys STACK POP rs2
 .end_define 
 
-#|----------| rt[15:0] = rs0[15:0] + rs1[15:0], rs2 = carryout
+#|----------| rt[15:0] = rs0[15:0] + rs1[15:0], rs2 = carryout -----------------------------------------------------------------------
 .define add-16 rt rs0 rs1 rs2 
 
 sys STACK PUSH rs2
@@ -479,7 +479,7 @@ END rt
 sys STACK POP rs2
 .end_define 
 
-#|----------| rt = rs0 + rs1
+#|----------| rt = rs0 + rs1 -------------------------------------------------------------------------------------------------------------
 .define add rt rs0 rs1 
 
 START rs0 rs1
@@ -488,7 +488,7 @@ END rt
 
 .end_define
 
-#|----------| #|----------| rt = rs + rs1, rs2 = carryin
+#|----------| #|----------| rt = rs + rs1, rs2 = carryin -----------------------------------------------------------------------
 .define add-carry rt rs0 rs1 rs2  
 sys STACK PUSH rs2
 START rs0 rs1 #carry
@@ -759,7 +759,7 @@ sys STACK POP rs2
 .end_define
 
 
-#|----------| rt=sum rd = carry-out rs0 and rs1 numbers to compare
+#|----------| rt=sum rd = carry-out rs0 and rs1 numbers to compare---------------------------------------------------------------
 # sum = 0, carryout = 1: rs0 = rs1
 # carryout = 0: rs0 < rs1
 # sum != 0, carryout = 1: rs0 > rs1
@@ -769,14 +769,14 @@ START rs0 rs1
 
 NOT r1 r1  # 1's complement of r1
 load1 r2      # Carry in = 1
-add-carry r3 r0 r1 r2
+add-carry rn r0 r1 r2
 
 sys STACK PUSH r2
 END rt
 sys STACK POP rd
 .end_define
 
-#|------------| rt = (rs < rd)
+#|------------| rt = (rs < rd)-----------------------------------------------------------------------
 .define IsLessThan rt rs rd
 
 START rs rd
@@ -790,8 +790,28 @@ END rt
 
 .end_define
 
+#|-------| rt = (rs0 == rs1)-----------------------------------------------------------------------
+.define IsEqual rt rs0 rs1
 
-#|--------| rs = rd if rt == 0 else rs = rf
+START rs0 rs1
+comparator r2 r3 r0 r1
+
+or_all_bits r2 r2
+
+NOT r4 r2
+AND r4 r4 r3
+BIT READ 0
+MOVE r4 rn
+BIT WRITE 0
+MOVE rn r4
+
+END rt
+
+
+.end_define
+
+
+#|--------| rs = rd if rt == 0 else rs = rf-----------------------------------------------------------------------
 .define MUX rs rt rd rf
 sys STACK PUSH rt
 START rd rf
@@ -844,6 +864,212 @@ END rs
 .end_define
 
 
-#|-------| rt = (rs == rd)
 
 
+# rt= rs0[0] | rs0[1] | ... | rs0[31] -----------------------------------------------------------------------
+.define or_all_bits rt rs0
+
+START rs0 rs0
+
+MOVE r3 r0
+
+MOVE r4 r3
+BIT READ 1
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r0 r1
+
+MOVE r4 r3
+BIT READ 2
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+
+MOVE r4 r3
+BIT READ 3
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+
+MOVE r4 r3
+BIT READ 4
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+
+MOVE r4 r3
+BIT READ 5
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 6
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 7
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 8
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 9
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 10
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 11
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 12
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 13
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 14
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 15
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 16
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 17
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 18
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 19
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 20
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 21
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 22
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 23
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 24
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 25
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 26
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 27
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 28
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 29
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+MOVE r4 r3
+BIT READ 30
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+
+MOVE r4 r3
+BIT READ 31
+MOVE r4 r1
+BIT WRITE 0
+MOVE r1 r4
+OR r2 r2 r1
+
+MOVE r4 r2
+BIT READ 0
+MOVE r4 rn
+BIT WRITE 0
+MOVE rn r4
+
+END rt
+.end_define
