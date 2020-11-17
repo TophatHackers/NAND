@@ -806,9 +806,24 @@ BIT WRITE 0
 MOVE rn r4
 
 END rt
-
-
 .end_define
+
+.define IsGreaterThan rt rs0 rs1
+
+START rs0 rs1
+comparator r2 r3 r0 r1
+
+or_all_bits r2 r2
+
+AND r4 r2 r3
+BIT READ 0
+MOVE r4 rn
+BIT WRITE 0
+MOVE rn r4
+
+END rt
+.end_define
+
 
 
 #|--------| rs = rd if rt == 0 else rs = rf-----------------------------------------------------------------------
